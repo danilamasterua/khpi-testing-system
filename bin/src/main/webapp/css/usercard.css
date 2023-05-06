@@ -1,0 +1,23 @@
+.user-card{
+    display: block;
+    margin: 5px;
+    padding: 1px;
+    float: left;
+    width: 250px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 4px 4px 8px 1px rgba(34, 60, 80, 0.2);
+    align-content: center;
+    background-color: white;
+}
+.user-actions{
+    display: inline-block;
+    width: 100%;
+    margin: 5px;
+    padding: 1px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 4px 4px 8px 1px rgba(34, 60, 80, 0.2);
+    align-content: center;
+    background-color: white;
+}

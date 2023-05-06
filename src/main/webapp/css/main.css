@@ -1,0 +1,44 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+header, footer{
+    display: inline-flex;
+    width: 100%;
+    padding: 1px;
+    background-color: blue;
+    color: white;
+}
+
+main{
+    display: block;
+    padding: 1px;
+    background-color: white;
+}
+
+.logo_header{
+    width: 172px;
+    height: 40px;
+}
+
+body{
+    background: linear-gradient(25deg, #E3FCF3, #E1EFFF);
+}
+.scroll-list{
+    display: block;
+    overflow-y: auto;
+    margin: 1px;
+    box-shadow: 4px 4px 8px 1px rgba(34, 60, 80, 0.2);
+    padding: 1px;
+    max-height: 80%;
+}
+.test-card{
+    display: block;
+    box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+    margin: 1px;
+    padding: 1px;
+}
+header div form{
+    margin-left: 2px;
+    margin-right: 2px;
+}
