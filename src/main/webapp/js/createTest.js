@@ -90,16 +90,44 @@ function createModuleTable(index, module){
     let table = document.createElement("table");
     table.setAttribute("class", "table table-striped");
     $.each(module.questions, function (index, question){
-        let tr=document.createElement("tr");
-        let tdText = document.createElement("td");
-        tdText.append(question.text);
-        tr.append(tdText);
-        table.append(tr);
+        table.append(getQuestionTabRow(index, question));
     })
     div.append(mDescription);
     div.append(createQuestionFormTech);
     div.append(table);
     return div;
+}
+
+function getQuestionTabRow(index, question){
+    let tr=document.createElement("tr");
+    let tdText = document.createElement("td");
+    tdText.append(question.text);
+    let tdBtnDeleteQuestion = document.createElement("td");
+    let btnDelete = document.createElement("button");
+    btnDelete.setAttribute("type", "button");
+    btnDelete.setAttribute("class", "btn btn-warning");
+    btnDelete.setAttribute("id", index);
+    btnDelete.setAttribute("onclick", "deleteQuestion(obj)");
+    btnDelete.append("Видалити");
+    tdBtnDeleteQuestion.append(btnDelete);
+    tr.append(tdText);
+    tr.append(tdBtnDeleteQuestion);
+    return tr;
+}
+
+function deleteQuestion(obj){
+    $.ajax({
+        method: "get",
+        url: "deleteQuestion",
+        data: {qId:obj.id},
+        success: function (response){
+            clearModules();
+            getModules(response);
+        },
+        error: function (error){
+            alert(error);
+        }
+    })
 }
 
 function clearModules(){
@@ -141,7 +169,21 @@ function backToModule(obj){
     let form = document.getElementById(obj.id).parentElement.parentElement;
     form.querySelector("#tempField").remove();
     form.parentElement.parentElement.style.display="none";
+    clearForm(form);
     document.getElementById("modules").style.display="block";
+}
+
+function clearForm(form){
+    let inputList = form.querySelectorAll('input');
+    for(let intr of inputList){
+        if (intr.tagName!=="button") {
+            intr.value = "";
+        }
+    }
+    let divList = form.querySelectorAll('div');
+    for(let div of divList){
+        div.remove();
+    }
 }
 
 function createQuestion(obj){
@@ -185,16 +227,27 @@ function createQuestion(obj){
 function addAnswerVar(obj){
     let form = document.getElementById(obj.id).parentElement;
     let div = document.createElement("div");
-    div.setAttribute("class", "row");
+    div.setAttribute("class", "grid");
     let text = document.createElement("input");
     text.setAttribute("type", "text");
-    text.setAttribute("class", "form-control col-3");
+    text.setAttribute("class", "form-control g-col-6 g-col-md-4");
     text.setAttribute("name", "ansText");
     let isRight = document.createElement("input");
     isRight.setAttribute("type", "checkbox");
-    isRight.setAttribute("class", "form-check-input col-1");
+    isRight.setAttribute("class", "form-check-input");
     isRight.setAttribute("name", "isRight");
+    let delBtn = document.createElement("button");
+    delBtn.setAttribute("type", "button");
+    delBtn.setAttribute("class", "btn btn-danger g-col-6 g-col-md-4");
+    delBtn.setAttribute("onclick", "deleteAnswerVar(this)");
+    delBtn.append("Видалити");
     div.append(text);
     div.append(isRight);
+    div.append(delBtn);
     form.append(div);
+}
+
+function deleteAnswerVar(obj){
+    let div = obj.parentElement;
+    div.remove();
 }

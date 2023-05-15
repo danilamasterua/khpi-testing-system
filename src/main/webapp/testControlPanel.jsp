@@ -30,6 +30,10 @@
                     <input type="hidden" value="${t.key}" name="testId">
                     <button type="submit" class="btn btn-primary">Доступ до тесту</button>
                 </form>
+                <form action="updateServlet" method="get" class="btn">
+                    <input type="hidden" value="${t.key}" name="testId">
+                    <button type="submit" class="btn btn-primary">Редагувати тест</button>
+                </form>
                 </p>
             </div>
         </c:forEach>

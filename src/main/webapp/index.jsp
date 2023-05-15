@@ -14,7 +14,7 @@
 <body>
 <jsp:include page="servicejsp/standardHeader.jsp"></jsp:include>
 <main>
-    <div class="login-form-block">
+    <div class="login-form-block justify-content-center">
         <form action="login" method="post" class="center-block">
             <label for="login" class="form-label">Login</label>
             <input id="login" type="text" name="login" placeholder="Login" class="form-control" required>

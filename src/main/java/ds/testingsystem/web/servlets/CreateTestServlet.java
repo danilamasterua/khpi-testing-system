@@ -38,13 +38,9 @@ public class CreateTestServlet extends HttpServlet {
             Gson g = new Gson();
             Test test = g.fromJson(testJson, Test.class);
             test.setUserId(model.getCurrentUser().getUserId());
-            int testId =  TestController.createTest(test); //1;
-            Test newTest = TestController.loadTest(testId);
+            int testId =  TestController.createTest(test);
             session.setAttribute("creatingTestId", testId);
-            JSONObject jsonResponse = new JSONObject();
-            jsonResponse.put("testId", testId);
-            jsonResponse.put("test", newTest);
-            jsonResponse.put("modules", newTest.getModules());
+            JSONObject jsonResponse = TestController.getTestJsonResponse(testId);
             resp.setContentType("application/json; charset=utf-8");
             resp.getWriter().append(jsonResponse.toString());
         } catch (Exception e){

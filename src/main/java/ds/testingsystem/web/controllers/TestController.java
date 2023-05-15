@@ -10,6 +10,7 @@ import ds.testingsystem.database.model.*;
 import ds.testingsystem.database.model.beans.DAO.UserAnswerDAO;
 import ds.testingsystem.database.model.beans.UserAnswer;
 import ds.testingsystem.database.model.beans.UserAnswerList;
+import org.json.JSONObject;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -51,7 +52,13 @@ public class TestController {
     public static int createTest(Test test){
         return TestDAO.insertTestData(test);
     }
-    public static void insertModule(int testId, Module module){ModuleDAO.insertModule(testId, module);}
+    public static void insertModule(String jsonData){
+        Gson g = new Gson();
+        JsonObject moduleJson = g.fromJson(jsonData, JsonObject.class);
+        Module module = new Module(moduleJson.get("description").getAsString(), moduleJson.get("qCount").getAsInt());
+        int testId = moduleJson.get("testId").getAsInt();
+        ModuleDAO.insertModule(testId, module);
+    }
     public static void createQuestion(String jsonData){
         Gson g = new Gson();
         JsonObject question = g.fromJson(jsonData, JsonObject.class);
@@ -74,9 +81,69 @@ public class TestController {
         TestDAO.deleteTest(testId);
     }
     public static HashMap<Integer, Group> getAccessedGroup(int testId){
-        return GroupDAO.getAccessedGroup(testId);
+        return GroupDAO.getAccessedGroup(testId, true);
     }
     public static HashMap<Integer, Group> getNotAccessedGroup(int testId){
-        return GroupDAO.getNotAccessedGroup(testId);
+        return GroupDAO.getAccessedGroup(testId, false);
     }
+    public static JSONObject getTestJsonResponse(int testId) throws SQLException {
+        Test newTest = TestController.loadTest(testId);
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("testId", testId);
+        jsonResponse.put("test", newTest);
+        jsonResponse.put("modules", newTest.getModules());
+        return jsonResponse;
+    }
+
+    public static void deleteQuestion(int qId){
+        QuestionDAO.deleteQuestion(qId);
+    }
+
+    public static JSONObject getQuestionJSON(int qId) throws SQLException{
+        Question q = QuestionDAO.getQuestion(qId);
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("text", q.getText());
+        jsonResponse.put("imgSrc", q.getImgSrc());
+        jsonResponse.put("qTypeId", q.getqTypeId());
+        jsonResponse.put("difficultId", q.getDifficultId());
+        jsonResponse.put("answers", AnswerDAO.getAnswerFromQuestion(qId));
+        return jsonResponse;
+    }
+    public static void updateTest(int testId, Test test) throws SQLException{
+        TestDAO.updateTest(testId, test);
+    }
+
+    public static void updateQuestion(String jsonData){
+        Gson g = new Gson();
+        JsonObject question = g.fromJson(jsonData, JsonObject.class);
+        Question q = new Question(question.get("text").getAsString(), question.get("imgSrc").getAsString(), question.get("qTypeId").getAsInt(), question.get("difficultId").getAsInt());
+        QuestionDAO.updateQuestion(question.get("qId").getAsInt(), q);
+        JsonArray answers = question.getAsJsonArray("questions");
+        for(JsonElement js:answers){
+            JsonObject obj = js.getAsJsonObject();
+            String aText = obj.get("text").getAsString();
+            boolean isRight = obj.get("isRight").getAsBoolean();
+            AnswerDAO.insertAnswer(question.get("qId").getAsInt(), new Answer(aText, isRight));
+        }
+    }
+
+    public static Module getModule(int moduleId){
+        return ModuleDAO.getModule(moduleId);
+    }
+
+    public static JSONObject getModuleJson(int moduleId){
+        Module module = getModule(moduleId);
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("description", module.getDescription());
+        jsonResponse.put("qCount", module.getqCount());
+        return jsonResponse;
+    }
+
+    public static void updateModule(String jsonObject){
+        Gson g = new Gson();
+        JsonObject object = g.fromJson(jsonObject, JsonObject.class);
+        ModuleDAO.updateModule(object.get("moduleId").getAsInt(), new Module(object.get("description").getAsString(), object.get("qCount").getAsInt()));
+    }
+
+    public static void deleteModule(int moduleId){ModuleDAO.deleteModule(moduleId);}
 }

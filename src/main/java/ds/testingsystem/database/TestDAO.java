@@ -15,6 +15,7 @@ public class TestDAO {
     private static final String SQL_GET_TEST_BY_USER_ID = "select * from test where userId=?";
     private static final String SQL_INSERT_TEST_DATA = "insert into test(name, description, userId, minToFin) values (?,?,?,?)";
     private static final String SQL_DELETE_TEST="delete from test where testId=?";
+    private static final String SQL_UPDATE_TEST="UPDATE test set name=?, description=? where testId=?";
 
     public static HashMap<Integer, Test> getAvailableTest(User user) throws SQLException{
         HashMap<Integer, Test> retMap = new HashMap<>();
@@ -105,6 +106,22 @@ public class TestDAO {
             con = Connect.getInstance().getConnection();
             PreparedStatement statement = con.prepareStatement(SQL_DELETE_TEST);
             statement.setInt(1, testId);
+            statement.executeUpdate();
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            Connect.getInstance().rollbackAndClose(con);
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateTest(int testId, Test test){
+        Connection con=null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_UPDATE_TEST);
+            statement.setString(1, test.getName());
+            statement.setString(2, test.getDescription());
+            statement.setInt(3, testId);
             statement.executeUpdate();
             Connect.getInstance().commitAndClose(con);
         } catch (SQLException e){

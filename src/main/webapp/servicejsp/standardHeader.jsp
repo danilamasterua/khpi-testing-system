@@ -9,9 +9,6 @@
         </form>
             <c:if test="${model.currentUser.roleId==2 || model.currentUser.roleId==1}">
                 <form action="test-control-panel" method="post"><input type="submit" value="Test control panel" class="btn btn-light"></form>
-                <c:if test="${model.currentUser.roleId==1}">
-                    <a class="btn btn-light">User control panel</a>
-                </c:if>
             </c:if>
         </div>
         <div style="display: flex; justify-content: space-between; margin-left: auto; align-items: center">

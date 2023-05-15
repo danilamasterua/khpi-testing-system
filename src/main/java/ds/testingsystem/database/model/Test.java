@@ -12,6 +12,11 @@ public class Test {
     public Test() {
     }
 
+    public Test(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
     public Test(String name, String description, int userId, int minToFin) {
         this.name = name;
         this.description = description;

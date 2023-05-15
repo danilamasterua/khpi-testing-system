@@ -10,7 +10,10 @@ import java.util.HashMap;
 
 public class AnswerDAO {
     private static final String SQL_GET_ANSWERS_FROM_QUESTION = "select * from answer where questionId=?";
-    private static final String SQL_INSERT_ANSWER = "insert into answer(questionId, text, isRight) VALUES (?,?,?)";
+    private static final String SQL_INSERT_ANSWER = "insert ignore into answer(questionId, text, isRight) VALUES (?,?,?)";
+    private static final String SQL_DELETE_ANSWER = "delete from answer where answerId=?";
+    private static final String SQL_UPDATE_ANSWER = " update answer set text=?, isRight=? where answerId=?";
+
 
     public static HashMap<Integer, Answer> getAnswerFromQuestion(int questionId) throws SQLException{
         HashMap<Integer, Answer> answers = new HashMap<>();
@@ -41,6 +44,31 @@ public class AnswerDAO {
             statement.setBoolean(3, answer.isRight());
             statement.executeUpdate();
             Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            Connect.getInstance().rollbackAndClose(con);
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteAnswer(int answerId){
+        Connection con = null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_DELETE_ANSWER);
+            statement.setInt(1, answerId);
+            statement.executeUpdate();
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            Connect.getInstance().rollbackAndClose(con);
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateAnswer(int answerId, Answer answer){
+        Connection con = null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_UPDATE_ANSWER);
         } catch (SQLException e){
             Connect.getInstance().rollbackAndClose(con);
             e.printStackTrace();

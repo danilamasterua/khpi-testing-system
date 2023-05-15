@@ -8,19 +8,25 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebServlet("/createQuestion")
-public class CreateQuestionServlet extends HttpServlet {
+@WebServlet("/updateModule")
+public class UpdateModuleServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String jsonData = req.getParameter("data");
         try {
-            HttpSession session = req.getSession();
-            int testId = (Integer) session.getAttribute("creatingTestId");
-            String jsonData = req.getParameter("data");
-            TestController.createQuestion(jsonData);
-            JSONObject jsonResponse = TestController.getTestJsonResponse(testId);
+            TestController.updateModule(jsonData);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int moduleId = Integer.parseInt(req.getParameter("mId"));
+        try {
+            JSONObject jsonResponse = TestController.getModuleJson(moduleId);
             resp.setContentType("application/json; charset=utf-8");
             resp.getWriter().append(jsonResponse.toString());
         } catch (Exception e){
