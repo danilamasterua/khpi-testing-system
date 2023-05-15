@@ -11,7 +11,6 @@
     <script src="js/getUserAnswer.js"></script>
 </head>
 <body>
-<jsp:include page="servicejsp/standardHeader.jsp"></jsp:include>
 <main>
     <c:forEach var="t" items="${test.modules}">
         <h2><c:out value="${t.value.description}"></c:out></h2>
@@ -51,6 +50,5 @@
         </c:forEach>
     </c:forEach>
 </main>
-<jsp:include page="servicejsp/footer.jsp"></jsp:include>
 </body>
 </html>

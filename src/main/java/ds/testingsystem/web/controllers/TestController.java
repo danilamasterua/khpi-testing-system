@@ -81,10 +81,18 @@ public class TestController {
         TestDAO.deleteTest(testId);
     }
     public static HashMap<Integer, Group> getAccessedGroup(int testId){
-        return GroupDAO.getAccessedGroup(testId, true);
+        HashMap<Integer, Group> group = GroupDAO.getAccessedGroup(testId, true);
+        for (Map.Entry<Integer, Group> entry:group.entrySet()){
+            entry.getValue().setUsers(UserDAO.getUsersByGroup(entry.getKey()));
+        }
+        return group;
     }
     public static HashMap<Integer, Group> getNotAccessedGroup(int testId){
-        return GroupDAO.getAccessedGroup(testId, false);
+        HashMap<Integer, Group> groups = GroupDAO.getAccessedGroup(testId, false);
+        for (Map.Entry<Integer, Group> entry:groups.entrySet()){
+            entry.getValue().setUsers(UserDAO.getUsersByGroup(entry.getKey()));
+        }
+        return groups;
     }
     public static JSONObject getTestJsonResponse(int testId) throws SQLException {
         Test newTest = TestController.loadTest(testId);
