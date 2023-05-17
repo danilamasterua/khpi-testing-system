@@ -8,12 +8,16 @@ import ds.testingsystem.database.*;
 import ds.testingsystem.database.model.Module;
 import ds.testingsystem.database.model.*;
 import ds.testingsystem.database.model.beans.DAO.UserAnswerDAO;
+import ds.testingsystem.database.model.beans.DAO.UserPointsDAO;
 import ds.testingsystem.database.model.beans.UserAnswer;
 import ds.testingsystem.database.model.beans.UserAnswerList;
+import ds.testingsystem.database.model.beans.UserPoints;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class TestController {
@@ -35,16 +39,29 @@ public class TestController {
         retTest.setQuestions(modules);
         return retTest;
     }
-    public static void setAnswers(int userId, UserAnswerList userAnswerList) throws SQLException{
-        for (String str: userAnswerList.getChanses()){
-            if(userAnswerList.getqTypeId()==3) {
+    public static boolean setAnswers(int userId, UserAnswerList userAnswerList) throws SQLException{
+        HashMap<Integer, Answer> answers = AnswerDAO.getAnswerFromQuestion(userAnswerList.getqId());
+        boolean isRight=false;
+        for (String str: userAnswerList.getChanses()) {
+            if (userAnswerList.getqTypeId() == 3) {
                 UserAnswer ua = new UserAnswer(userId, userAnswerList.getqId(), str);
                 UserAnswerDAO.setUserAnswerOnText(ua);
-            } else if(userAnswerList.getqTypeId()==1||userAnswerList.getqTypeId()==2){
+                for(Map.Entry<Integer, Answer> entry: answers.entrySet()){
+                    if(entry.getValue().getText().equals(str)){
+                        isRight=true;
+                        break;
+                    } else if(isRight){
+                        isRight=false;
+                        break;
+                    }
+                }
+            } else if (userAnswerList.getqTypeId() == 1 || userAnswerList.getqTypeId() == 2) {
                 UserAnswer ua = new UserAnswer(userId, Integer.parseInt(str), userAnswerList.getqId());
                 UserAnswerDAO.setUserAnswerOnAnswerId(ua);
+                isRight = answers.get(Integer.parseInt(str)).isRight();
             }
         }
+        return isRight;
     }
     public static HashMap<Integer, Test> getTestsCreatedByUser(int userId) throws SQLException{
         return TestDAO.getTestByUserId(userId);
@@ -154,4 +171,74 @@ public class TestController {
     }
 
     public static void deleteModule(int moduleId){ModuleDAO.deleteModule(moduleId);}
+
+    public static double getPoints(int testId, int userId, LocalDateTime startTime) throws SQLException {
+        DoubleWrapper points = new DoubleWrapper();
+        Test myTest = loadTest(testId);
+        for(Map.Entry<Integer, Module> entry:myTest.getModules().entrySet()){
+            for (Map.Entry<Integer, Question> qEntry:entry.getValue().getQuestions().entrySet()){
+                int qTypeId = qEntry.getValue().getqTypeId();
+                int qDifId = qEntry.getValue().getDifficultId();
+                LinkedList<UserAnswer> ua = UserAnswerDAO.getUserAnswersByQuestionId(qEntry.getKey(), userId, startTime);
+                for(Map.Entry<Integer, Answer> answerEntry:qEntry.getValue().getAnswers().entrySet()){
+                    if(qTypeId==1||qTypeId==2){
+                        ua.stream()
+                                .filter(userAnswer -> userAnswer.getAnswerId() == answerEntry.getKey())
+                                .forEach(userAnswer -> {
+                                    if (answerEntry.getValue().isRight()){
+                                        switch (qDifId){
+                                            case 1:
+                                                points.setValue(points.getValue()+1*0.5);
+                                                break;
+                                            case 2:
+                                                points.setValue(points.getValue()+1*0.75);
+                                                break;
+                                            case 3:
+                                                points.setValue(points.getValue()+1);
+                                                break;
+                                        }
+                                    }
+                                });
+                    }
+                }
+            }
+        }
+        UserPoints up = new UserPoints(testId, userId, points.getValue()/getMaxPoint(testId)*100, LocalDateTime.now());
+        UserPointsDAO.insertUserpoint(up);
+        return points.getValue();
+    }
+    public static double getMaxPoint(int testId) throws SQLException {
+        DoubleWrapper points = new DoubleWrapper();
+        Test myTest = loadTest(testId);
+        for (Map.Entry<Integer, Module> m:myTest.getModules().entrySet()){
+            for (Map.Entry<Integer, Question> q:m.getValue().getQuestions().entrySet()){
+                int qTypeId = q.getValue().getqTypeId();
+                int qDifId = q.getValue().getDifficultId();
+                q.getValue().getAnswers().entrySet().stream().forEach(entry ->{
+                    if(entry.getValue().isRight()){
+                        switch (qDifId){
+                            case 1:
+                                points.setValue(points.getValue()+1*0.5);
+                                break;
+                            case 2:
+                                points.setValue(points.getValue()+1*0.75);
+                                break;
+                            case 3:
+                                points.setValue(points.getValue()+1);
+                                break;
+                        }
+                    }
+                });
+            }
+        }
+        return points.getValue();
+    }
+}
+
+class DoubleWrapper{
+    private double value;
+    public DoubleWrapper() {value=0;}
+    public DoubleWrapper(double value) {this.value = value;}
+    public double getValue() {return value;}
+    public void setValue(double value) {this.value = value;}
 }

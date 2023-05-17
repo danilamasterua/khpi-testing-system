@@ -45,7 +45,7 @@
                 </table>
             </div>
             <div class="col-6 col-sm-4">
-                <h4>Групи, що не мають доступу до тесту <button class="btn btn-primary">Створити групу</button></h4>
+                <h4>Групи, що не мають доступу до тесту <button class="btn btn-link" onclick="showCrGroupForm(this)">Створити групу</button></h4>
                 <table class="table table-striped">
                     <c:forEach var="g" items="${notAcessedGroups}">
                         <tr>
@@ -103,19 +103,11 @@
         </div>
         <div id="createNewGroup" style="display: none;">
             <div class="login-form-block">
-                <p class="row mb-0">
-                    <button type="button" id="backMG" class="btn btn-light col m-2" onclick="backToTable(this)"><i class="bi bi-arrow-bar-left"></i> Назад</button>
-                    <button type="button" id="cNG" class="btn btn-primary col m-2" onclick="createStudent(this)">Зберегти</button>
-                </p>
+                <form>
                 <label for="gd" class="form-label">Назва групи</label>
                 <input name="description" id="gd" type="text" class="form-control">
                 <button type="button" id="gdBtn" class="btn btn-primary" onclick="createGroup(this)">Створити групу</button>
-                <button type="button" id="nUBtn" class="btn btn-light" onclick="" disabled>Додати користувача</button>
-                <div class="row">
-                    <p class="col">Ім'я користувача</p>
-                    <p class="col">Прізвище користувача</p>
-                    <p class="col">Електронна пошта</p>
-                </div>
+                </form>
             </div>
         </div>
     </main>

@@ -1,8 +1,6 @@
 package ds.testingsystem.web.servlets;
 
-import com.google.gson.Gson;
 import ds.testingsystem.database.model.Model;
-import ds.testingsystem.database.model.beans.UserAnswerList;
 import ds.testingsystem.web.controllers.TestController;
 import org.json.JSONObject;
 
@@ -13,24 +11,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 
-@WebServlet("/setAnswer")
-public class SetAnswerServlet extends HttpServlet {
+@WebServlet("/getPoints")
+public class GetTestPointsServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             HttpSession session = req.getSession();
+            int testId = Integer.parseInt(req.getParameter("testId"));
+            LocalDateTime startDateTime = LocalDateTime.parse(req.getParameter("startDate"));
             Model model = (Model) session.getAttribute("model");
-            String jsonData = req.getParameter("data");
-            Gson gson = new Gson();
-            UserAnswerList userAnswerList = gson.fromJson(jsonData, UserAnswerList.class);
-            boolean isRight = TestController.setAnswers(model.getCurrentUser().getUserId(), userAnswerList);
+            int userId = model.getCurrentUser().getUserId();
+            double points = TestController.getPoints(testId, userId, startDateTime);
+            double maxPoints = TestController.getMaxPoint(testId);
+            double percentPoints = points/maxPoints*100;
             JSONObject jsonResponse = new JSONObject();
-            jsonResponse.put("isRight", isRight);
+            jsonResponse.put("points", percentPoints);
             resp.setContentType("application/json; charset=utf-8");
             resp.getWriter().append(jsonResponse.toString());
-        } catch (Exception e){
-            e.printStackTrace();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -13,6 +13,7 @@ public class AnswerDAO {
     private static final String SQL_INSERT_ANSWER = "insert ignore into answer(questionId, text, isRight) VALUES (?,?,?)";
     private static final String SQL_DELETE_ANSWER = "delete from answer where answerId=?";
     private static final String SQL_UPDATE_ANSWER = " update answer set text=?, isRight=? where answerId=?";
+    private static final String SQL_GET_USERANSWERS = "";
 
 
     public static HashMap<Integer, Answer> getAnswerFromQuestion(int questionId) throws SQLException{

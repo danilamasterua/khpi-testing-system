@@ -20,7 +20,7 @@ function showCrAccForm(obj){
 }
 
 function showCrUserForm(obj){
-    document.getElementById("accessTable").display="none";
+    document.getElementById("accessTable").style.display="none";
     let form = document.getElementById(obj.id).parentElement;
     let gId = form.elements['gId'].value;
     let ga = document.getElementById("createNewUser");
@@ -31,6 +31,11 @@ function showCrUserForm(obj){
     groupId.setAttribute("value", gId);
     ga.querySelector('form').append(groupId);
     ga.style.display="block";
+}
+
+function showCrGroupForm(obj){
+    document.getElementById("accessTable").style.display="none";
+    document.getElementById("createNewGroup").style.display="block";
 }
 
 function createStudent(obj){
@@ -68,14 +73,11 @@ function createGroup(obj) {
         data: {description: description},
         dataType: 'json',
         success: function (response) {
-            let hidden = document.createElement("input");
-            hidden.setAttribute("id", "tempField");
-            hidden.setAttribute("name", "groupId");
-            hidden.setAttribute("value", response.gId);
-            hidden.setAttribute("type", "hidden");
-            form.prepend(hidden);
-            obj.disabled=true;
-            form.querySelector("#nUBtn").disabled=false;
+            location.reload();
+        },
+        error: function (error) {
+            alert("Помилка при створенні групи.\nМожливо група з такою назвою вже існує, або потрібно звернутися до системного адміністратора");
+            location.reload();
         }
     })
 }
@@ -96,6 +98,7 @@ function createUserSmallDiv(obj){
     email.setAttribute("type", "text");
     email.setAttribute("class", "form-control col");
     email.setAttribute("name", "email");
-
-
+    usDiv.append(firstName);
+    usDiv.append(lastName);
+    usDiv.append(email);
 }

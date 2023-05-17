@@ -62,7 +62,11 @@ public class UserDAO {
             statement.setInt(k++, user.getRoleId());
             statement.setString(k++, user.getEmail());
             statement.setInt(k, user.getGroupId());
-            ret = statement.executeUpdate();
+            statement.executeUpdate();
+            ResultSet rs = statement.getGeneratedKeys();
+            while (rs.next()){
+                ret=rs.getInt(1);
+            }
             Connect.getInstance().commitAndClose(con);
         } catch (SQLException e) {
             e.printStackTrace();

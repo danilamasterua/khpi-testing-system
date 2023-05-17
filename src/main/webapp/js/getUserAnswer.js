@@ -1,4 +1,5 @@
 function getAnswer(obj){
+    obj.disabled = 'true';
     let form = document.getElementById(obj.id).parentElement
     let data={
         qId: form.elements['qId'].value,
@@ -20,14 +21,49 @@ function getAnswer(obj){
         method: 'POST',
         url: "setAnswer",
         data: {data: JSON.stringify(data)},
+        dataType: 'json',
         success: function (response){
-            let div=document.createElement("div");
-            div.innerHTML="Відповідь записано";
-            form.append(div);
-            obj.disabled = 'true';
+            console.log(response.isRight);
+            if (response.isRight){
+                form.append("Відповідь правильна");
+            } else {
+                form.append("Відповідь неправильна");
+            }
         },
         error: function (error){
             alert("Error: "+error);
         }
     });
+}
+
+function startTest(obj){
+    let startform =document.getElementById('startTest');
+    startform.style.display="none";
+    startform.nextElementSibling.style.display="flex";
+}
+
+function openNextBlock(obj){
+    let sD = obj.parentElement.parentElement;
+    sD.style.display="none";
+    sD.nextElementSibling.style.display="flex";
+}
+
+function getTestPoints(obj){
+    obj.disabled=true;
+    document.getElementById("loading").style.display = "flex";
+    let testInfo = obj.parentElement;
+    $.ajax({
+        method: 'POST',
+        url: 'getPoints',
+        data: {
+            testId: testInfo.elements['testId'].value,
+            startDate: testInfo.elements['startDate'].value
+        },
+        dataType: 'json',
+        success: function (response){
+            document.getElementById("resultField").append(response.points+"%");
+            document.getElementById("loading").style.display="none";
+            document.getElementById("results").style.display="flex";
+        }
+    })
 }

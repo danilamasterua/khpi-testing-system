@@ -43,7 +43,11 @@ public class GroupDAO {
             con = Connect.getInstance().getConnection();
             PreparedStatement statement = con.prepareStatement(SQL_INSERT_GROUP, PreparedStatement.RETURN_GENERATED_KEYS);
             statement.setString(1, g.getName());
-            ret=statement.executeUpdate();
+            statement.executeUpdate();
+            ResultSet rs = statement.getGeneratedKeys();
+            while (rs.next()){
+                ret=rs.getInt(1);
+            }
             Connect.getInstance().commitAndClose(con);
         } catch (SQLException e){
             e.printStackTrace();
