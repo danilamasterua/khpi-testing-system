@@ -34,6 +34,10 @@
                     <input type="hidden" value="${t.key}" name="testId">
                     <button type="submit" class="btn btn-primary">Редагувати тест</button>
                 </form>
+                <form action="getResults" method="get" class="btn">
+                    <input type="hidden" value="${t.key}" name="testId">
+                    <button type="submit" class="btn btn-primary">Оцінки за тест</button>
+                </form>
                 </p>
             </div>
         </c:forEach>

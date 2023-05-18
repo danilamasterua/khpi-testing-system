@@ -13,7 +13,7 @@ public class QuestionDAO {
     private static final String SQL_INSERT_QUESTION = "insert into question (text, imgSrc, qTypeId, moduleId, difficultId) values (?,?,?,?,?)";
     private static final String SQL_DELETE_QUESTION = "delete from question where questionId=?";
     private static final String SQL_GET_QUESTION_BY_ID = "select * from question where questionId=?";
-    private static final String SQL_UPDATE_QUESTION = "update question set text=?, imgSrc=?, difficultId=? where questionId=?";
+    private static final String SQL_UPDATE_QUESTION = "update question set text=?, imgSrc=?, difficultId=?, qTypeId=? where questionId=?";
 
     public static HashMap<Integer, Question> getQuestionsFromModule(int moduleId) throws SQLException{
         HashMap<Integer, Question> retHashMap = new HashMap<>();
@@ -101,13 +101,16 @@ public class QuestionDAO {
             statement.setString(1, q.getText());
             statement.setString(2, q.getImgSrc());
             statement.setInt(3, q.getDifficultId());
-            statement.setInt(4, questionId);
+            statement.setInt(4, q.getqTypeId());
+            statement.setInt(5, questionId);
+            statement.executeUpdate();
             Connect.getInstance().commitAndClose(con);
         } catch (SQLException e){
             e.printStackTrace();
             Connect.getInstance().rollbackAndClose(con);
         }
     }
+
 }
 
 class QuestionMapper implements EntityMapper<Question>{

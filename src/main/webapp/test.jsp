@@ -16,9 +16,14 @@
     <h2>${test.name}</h2>
 </header>
 <main class="container" style="margin-top: 50px">
-    <div id="startTest" class="login-form-block">
+    <div id="startTest" class="justify-content-center">
+        <div>
+        <form action="getTests" method="post">
+            <button type="submit" class="btn btn-link"><i class="bi bi-arrow-bar-left"></i> Повернутись на сторінку вибору тестів</button>
+        </form>
         <h2>${test.name}</h2>
         <button class="btn btn-primary" id="startTestBtn" onclick="startTest()">Розпочати тест</button>
+        </div>
     </div>
     <c:forEach var="t" items="${test.modules}">
         <c:forEach var="m" items="${t.value.questions}">
@@ -73,9 +78,14 @@
         <strong>Loading...</strong>
         <div class="spinner-border ms-auto" role="status" aria-hidden="true"></div>
     </div>
-    <div id="results" class="login-form-block" style="display: none;">
+    <div id="results" class="justify-content-center" style="display: none;">
+        <div>
+        <form action="getTests" method="post">
+            <button type="submit" class="btn btn-link"><i class="bi bi-arrow-bar-left"></i> Повернутись на сторінку вибору тестів</button>
+        </form>
         <hr>
         <p id="resultField">Підсумкова оцінка: </p>
+        </div>
     </div>
 </main>
 </body>

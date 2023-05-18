@@ -12,6 +12,7 @@ import ds.testingsystem.database.model.beans.DAO.UserPointsDAO;
 import ds.testingsystem.database.model.beans.UserAnswer;
 import ds.testingsystem.database.model.beans.UserAnswerList;
 import ds.testingsystem.database.model.beans.UserPoints;
+import ds.testingsystem.database.model.beans.UserTestPoints;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
@@ -199,6 +200,24 @@ public class TestController {
                                         }
                                     }
                                 });
+                    } else {
+                        ua.stream()
+                                .filter(userAnswer -> userAnswer.getText().equals(answerEntry.getValue().getText()))
+                                .forEach(userAnswer -> {
+                                    if (answerEntry.getValue().isRight()){
+                                        switch (qDifId){
+                                            case 1:
+                                                points.setValue(points.getValue()+1*0.5);
+                                                break;
+                                            case 2:
+                                                points.setValue(points.getValue()+1*0.75);
+                                                break;
+                                            case 3:
+                                                points.setValue(points.getValue()+1);
+                                                break;
+                                        }
+                                    }
+                                });
                     }
                 }
             }
@@ -232,6 +251,19 @@ public class TestController {
             }
         }
         return points.getValue();
+    }
+
+    public static HashMap<Test, Double> getPassedTests(User user){
+        return TestDAO.getPassedTest(user);
+    }
+    public static HashMap<Group, LinkedList<UserTestPoints>> getUserPointsByTestId(int testId){
+        HashMap<Integer, Group> groups = GroupDAO.getAccessedGroup(testId, true);
+        HashMap<Group, LinkedList<UserTestPoints>> ret = new HashMap<>();
+        for (Map.Entry<Integer, Group> entry: groups.entrySet()){
+            LinkedList<UserTestPoints> utp = UserPointsDAO.getUsersPoints(entry.getKey(), testId);
+            ret.put(entry.getValue(), utp);
+        }
+        return ret;
     }
 }
 

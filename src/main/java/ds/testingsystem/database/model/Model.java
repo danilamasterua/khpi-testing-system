@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Model {
     private User currentUser;
     private HashMap<Integer, Test> tests;
-    private HashMap<Integer, User> users;
+    private HashMap<Test, Double> passedTests;
 
     public Model() {
     }
@@ -16,33 +16,23 @@ public class Model {
         this.currentUser = currentUser;
         this.tests = tests;
     }
-    public Model(User currentUser, HashMap<Integer, Test> tests, HashMap<Integer, User> users) {
+    public Model(User currentUser, HashMap<Integer, Test> tests, HashMap<Test, Double> passedTests) {
         this.currentUser = currentUser;
         this.tests = tests;
-        this.users = users;
+        this.passedTests = passedTests;
     }
-
-    public HashMap<Integer, User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(HashMap<Integer, User> users) {
-        this.users = users;
-    }
-
     public User getCurrentUser() {
         return currentUser;
     }
-
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
     }
-
     public HashMap<Integer, Test> getTests() {
         return tests;
     }
-
     public void setTests(HashMap<Integer, Test> tests) {
         this.tests = tests;
     }
+    public HashMap<Test, Double> getPassedTests() {return passedTests;}
+    public void setPassedTests(HashMap<Test, Double> passedTests) {this.passedTests = passedTests;}
 }
