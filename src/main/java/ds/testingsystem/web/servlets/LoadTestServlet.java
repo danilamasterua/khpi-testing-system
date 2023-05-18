@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 @WebServlet("/loadTest")
 public class LoadTestServlet extends HttpServlet {
@@ -17,6 +18,8 @@ public class LoadTestServlet extends HttpServlet {
         int testId = Integer.parseInt(req.getParameter("testId"));
         try {
             req.setAttribute("test", TestController.loadTest(testId));
+            req.setAttribute("nowDate", LocalDateTime.now());
+            req.setAttribute("testId", testId);
         } catch (SQLException e) {
             e.printStackTrace();
         }

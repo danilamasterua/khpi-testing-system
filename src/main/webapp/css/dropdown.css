@@ -1,8 +1,6 @@
 .dropdown-button{
     display: block;
-    min-width: 100px;
     background-color: blue;
-    height: 40px;
     color: white;
     border: none;
 }

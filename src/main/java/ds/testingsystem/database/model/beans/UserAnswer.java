@@ -9,6 +9,9 @@ public class UserAnswer {
     private String text;
     private LocalDateTime ansDateTime;
 
+    public UserAnswer() {
+    }
+
     public UserAnswer(int userId, int qId, String text) {
         this.userId = userId;
         this.qId = qId;

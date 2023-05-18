@@ -3,14 +3,20 @@ package ds.testingsystem.database;
 import ds.testingsystem.database.model.Test;
 import ds.testingsystem.database.model.User;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 public class TestDAO {
     private static final String SQL_GET_AVAILABLE_TESTS_FOR_USER = "select test.testId, test.name, test.description, test.userId, test.minToFin" +
             " from test inner join groupaccess on test.testId = groupaccess.testId " +
-            " where groupaccess.groupId in (select groupId from user where userId=?) " ;
-
+            " where groupaccess.groupId in (select groupId from user where userId=?) and" +
+            " test.testId not in (select testId from userpoints where userId=?) " ;
+    private static final String SQL_GET_PASSED_TEST = "select test.testId, test.name, test.description, test.userId, test.minToFin, userpoints.points " +
+            " from userpoints left join test on userpoints.testId=test.testId " +
+            " where userpoints.userId = ? order by userpoints.datetime desc";
     private static final String SQL_GET_TEST_INFO_BY_ID = "select * from test where testId = ?";
     private static final String SQL_GET_TEST_BY_USER_ID = "select * from test where userId=?";
     private static final String SQL_INSERT_TEST_DATA = "insert into test(name, description, userId, minToFin) values (?,?,?,?)";
@@ -22,6 +28,7 @@ public class TestDAO {
         try (Connection con = Connect.getInstance().getConnection()){
             PreparedStatement statement = con.prepareStatement(SQL_GET_AVAILABLE_TESTS_FOR_USER);
             statement.setInt(1, user.getUserId());
+            statement.setInt(2, user.getUserId());
             ResultSet resultSet = statement.executeQuery();
             TestMapper mapper = new TestMapper();
             while (resultSet.next()){
@@ -35,7 +42,25 @@ public class TestDAO {
         }
         return retMap;
     }
-
+    public static HashMap<Test, Double> getPassedTest(User user){
+        HashMap<Test, Double> retValue = new HashMap<>();
+        Connection con = null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_GET_PASSED_TEST);
+            statement.setInt(1, user.getUserId());
+            ResultSet rs = statement.executeQuery();
+            TestMapper mapper = new TestMapper();
+            while (rs.next()){
+                retValue.put(mapper.mapRow(rs), rs.getDouble("points"));
+            }
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            e.printStackTrace();
+            Connect.getInstance().rollbackAndClose(con);
+        }
+        return retValue;
+    }
     public static Test getTestInfo(int testId) throws SQLException{
         Test retTest = new Test();
         try (Connection con = Connect.getInstance().getConnection()){
@@ -129,6 +154,7 @@ public class TestDAO {
             e.printStackTrace();
         }
     }
+
 }
 
 class TestMapper implements EntityMapper<Test>{

@@ -15,6 +15,15 @@ import java.sql.SQLException;
 @WebServlet("/getTests")
 public class GetTestsServlet extends HttpServlet {
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        Model model = (Model) session.getAttribute("model");
+        model.setPassedTests(TestController.getPassedTests(model.getCurrentUser()));
+        req.setAttribute("model", model);
+        session.setAttribute("model", model);
+        getServletContext().getRequestDispatcher("/passedTests.jsp").forward(req, resp);
+    }
+    @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         Model model = (Model) session.getAttribute("model");
