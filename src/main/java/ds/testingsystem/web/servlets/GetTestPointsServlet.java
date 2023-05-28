@@ -24,9 +24,10 @@ public class GetTestPointsServlet extends HttpServlet {
             LocalDateTime startDateTime = LocalDateTime.parse(req.getParameter("startDate"));
             Model model = (Model) session.getAttribute("model");
             int userId = model.getCurrentUser().getUserId();
-            double points = TestController.getPoints(testId, userId, startDateTime);
-            double maxPoints = TestController.getMaxPoint(testId);
+            double points = TestController.getPoints(userId, startDateTime);
+            double maxPoints = TestController.getMaxPoint(userId, startDateTime);
             double percentPoints = points/maxPoints*100;
+            TestController.setUserPoint(percentPoints, testId, userId);
             JSONObject jsonResponse = new JSONObject();
             jsonResponse.put("points", percentPoints);
             resp.setContentType("application/json; charset=utf-8");

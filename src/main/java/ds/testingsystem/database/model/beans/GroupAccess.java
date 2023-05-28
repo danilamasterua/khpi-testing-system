@@ -7,8 +7,20 @@ public class GroupAccess {
     private int groupId;
     private LocalDateTime accStTime;
     private LocalDateTime accFinTime;
+    private int minToFin;
 
     public GroupAccess() {
+    }
+
+    public GroupAccess(int testId, int groupId) {
+        this.testId = testId;
+        this.groupId = groupId;
+    }
+
+    public GroupAccess(int testId, int groupId, int minToFin) {
+        this.testId = testId;
+        this.groupId = groupId;
+        this.minToFin = minToFin;
     }
 
     public GroupAccess(int testId, int groupId, LocalDateTime accStTime, LocalDateTime accFinTime) {
@@ -48,5 +60,13 @@ public class GroupAccess {
 
     public void setAccFinTime(LocalDateTime accFinTime) {
         this.accFinTime = accFinTime;
+    }
+
+    public int getMinToFin() {
+        return minToFin;
+    }
+
+    public void setMinToFin(int minToFin) {
+        this.minToFin = minToFin;
     }
 }

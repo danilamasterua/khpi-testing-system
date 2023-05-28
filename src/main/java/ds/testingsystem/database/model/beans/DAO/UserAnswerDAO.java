@@ -13,6 +13,7 @@ public class UserAnswerDAO {
     private static final String SQL_INSERT_USERANSWER_WITH_ANSWER_ID = "insert into useranswer(answerId, questionId, userId, answerdate) values (?,?,?,?)";
     private static final String SQL_INSERT_USERANSWER_WITH_TEXT = "INSERT INTO useranswer(questionId, userId, text, answerdate) VALUES (?,?,?,?)";
     private static final String SQL_GET_USERANSWER_BY_QUESTION_ID = "select * from useranswer where userId=? and questionId=? and answerdate>?";
+    private static final String SQL_GET_QUESTION_IDS_BY_USER = "select questionId from useranswer where userId=? and answerdate>?";
 
     public static void setUserAnswerOnAnswerId(UserAnswer userAnswer) throws SQLException{
         Connection con = null;
@@ -68,6 +69,26 @@ public class UserAnswerDAO {
             e.printStackTrace();
         }
         return userAnswers;
+    }
+
+    public static LinkedList<Integer> getUserQuestions(int userId, LocalDateTime startDate){
+        LinkedList<Integer> questionIdS = new LinkedList<>();
+        Connection con = null;
+        try {
+            con=Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_GET_QUESTION_IDS_BY_USER);
+            statement.setInt(1, userId);
+            statement.setTimestamp(2, Timestamp.valueOf(startDate));
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                questionIdS.add(rs.getInt("questionId"));
+            }
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            Connect.getInstance().rollbackAndClose(con);
+            e.printStackTrace();
+        }
+        return questionIdS;
     }
 }
 

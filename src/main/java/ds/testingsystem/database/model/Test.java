@@ -6,7 +6,6 @@ public class Test {
     private String name;
     private String description;
     private int userId;
-    private int minToFin;
     private HashMap<Integer, Module> modules;
 
     public Test() {
@@ -21,14 +20,12 @@ public class Test {
         this.name = name;
         this.description = description;
         this.userId = userId;
-        this.minToFin = minToFin;
     }
 
-    public Test(String name, String description, int userId, int minToFin, HashMap<Integer, Module> modules) {
+    public Test(String name, String description, int userId, HashMap<Integer, Module> modules) {
         this.name = name;
         this.description = description;
         this.userId = userId;
-        this.minToFin = minToFin;
         this.modules = modules;
     }
 
@@ -56,14 +53,6 @@ public class Test {
         this.userId = userId;
     }
 
-    public int getMinToFin() {
-        return minToFin;
-    }
-
-    public void setMinToFin(int minToFin) {
-        this.minToFin = minToFin;
-    }
-
     public HashMap<Integer, Module> getModules() {
         return modules;
     }
@@ -78,7 +67,6 @@ public class Test {
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", userId=" + userId +
-                ", minToFin=" + minToFin +
                 ", modules=" + modules +
                 '}';
     }

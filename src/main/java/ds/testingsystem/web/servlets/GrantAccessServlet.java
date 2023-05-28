@@ -17,9 +17,17 @@ public class GrantAccessServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int testId = Integer.parseInt(req.getParameter("testId"));
         int groupId = Integer.parseInt(req.getParameter("groupId"));
-        LocalDateTime stDateTime = LocalDateTime.parse(req.getParameter("accStTime"));
-        LocalDateTime finDateTime = LocalDateTime.parse(req.getParameter("accFinTime"));
-        GroupAccess ga = new GroupAccess(testId, groupId, stDateTime, finDateTime);
+        GroupAccess ga = new GroupAccess();
+        if(!req.getParameter("accStTime").equals("") && !req.getParameter("accFinTime").equals("")) {
+            LocalDateTime stDateTime = LocalDateTime.parse(req.getParameter("accStTime"));
+            LocalDateTime finDateTime = LocalDateTime.parse(req.getParameter("accFinTime"));
+            ga = new GroupAccess(testId, groupId, stDateTime, finDateTime);
+        } else if (!req.getParameter("minToFin").equals("")) {
+            int minToFin = Integer.parseInt(req.getParameter("minToFin"));
+            ga = new GroupAccess(testId, groupId, minToFin);
+        } else {
+            ga=new GroupAccess(testId, groupId);
+        }
         SupportController.grantAccess(ga);
         getServletContext().getRequestDispatcher("/loadTestAccessPage").forward(req, resp);
     }

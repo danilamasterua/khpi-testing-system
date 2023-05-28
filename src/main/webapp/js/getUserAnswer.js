@@ -1,3 +1,4 @@
+let notPassedQId = [];
 function getAnswer(obj){
     obj.disabled = 'true';
     let form = document.getElementById(obj.id).parentElement
@@ -37,7 +38,8 @@ function getAnswer(obj){
 }
 
 function startTest(obj){
-    let startform =document.getElementById('startTest');
+    let startform=document.getElementById('startTest');
+    startTimer(obj);
     startform.style.display="none";
     startform.nextElementSibling.style.display="flex";
 }
@@ -66,4 +68,56 @@ function getTestPoints(obj){
             document.getElementById("results").style.display="flex";
         }
     })
+}
+
+let startTime;
+let duration;
+let finTime
+
+function startTimer(obj){
+    startTime = Math.floor(Date.now()/1000);
+    let form = obj.parentElement;
+    let finTestDate = form.elements['finAccDate'].value;
+    let minToFin = form.elements['minToFin'].value;
+    if(finTestDate!=""){
+        console.log("Starting test with finTestDate");
+        finTime=new Date(form.elements['finAccDate'].value);
+        duration = Math.floor((finTime-startTime)/1000);
+        console.log(duration);
+    } else if (minToFin!=""){
+        duration = Number.parseInt(minToFin) * 60;
+        console.log("Starting test with minToFin");
+        console.log(duration);
+    } else {
+        console.log("Starting test without timer");
+    }
+    if(finTestDate!=""||minToFin!=""){
+        setInterval(updateTimer, 1000);
+    }
+}
+
+function updateTimer(){
+    let currentTime = Math.floor(Date.now()/1000);
+    let elapsedTime = currentTime - startTime;
+    let remainingTime = duration - elapsedTime;
+    if(remainingTime>0){
+        let hours = Math.floor(remainingTime/3600);
+        let minutes = Math.floor((remainingTime/60)%60);
+        let seconds = remainingTime%60;
+        console.log(hours+":"+minutes+":"+seconds);
+        let formattedTime =
+            ("0" + hours).slice(-2) +
+            ":" +
+            ("0" + minutes).slice(-2) +
+            ":" +
+            ("0" + seconds).slice(-2);
+
+        document.getElementById("timer").textContent = formattedTime;
+    } else {
+        let qDivs = document.querySelectorAll('[id^="q"]');
+        for (let qDiv of qDivs){
+            qDiv.style.display="none";
+        }
+        document.getElementById("endTest").style.display="flex";
+    }
 }

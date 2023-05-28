@@ -1,3 +1,4 @@
+<%--<jsp:useBean id="accessData" scope="request" type="ds.testingsystem.database.model.beans.GroupAccess"/>--%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%--<jsp:useBean id="test" class="ds.testingsystem.model.Test"></jsp:useBean>--%>
@@ -12,8 +13,9 @@
     <script src="js/getUserAnswer.js"></script>
 </head>
 <body>
-<header style="position: fixed; top:0;">
-    <h2>${test.name}</h2>
+<header class="justify-content-between" style="position: fixed; top:0;">
+    <h2 class="col-4">${test.name}</h2>
+    <h2 class="col-4" id="timer"></h2>
 </header>
 <main class="container" style="margin-top: 50px">
     <div id="startTest" class="justify-content-center">
@@ -22,12 +24,16 @@
             <button type="submit" class="btn btn-link"><i class="bi bi-arrow-bar-left"></i> Повернутись на сторінку вибору тестів</button>
         </form>
         <h2>${test.name}</h2>
-        <button class="btn btn-primary" id="startTestBtn" onclick="startTest()">Розпочати тест</button>
+            <form>
+                <input type="hidden" name="finAccDate" value="${accessData.accFinTime}">
+                <input type="hidden" name="minToFin" value="${accessData.minToFin}">
+                <button type="button" class="btn btn-primary" id="startTestBtn" onclick="startTest(this)">Розпочати тест</button>
+            </form>
         </div>
     </div>
     <c:forEach var="t" items="${test.modules}">
         <c:forEach var="m" items="${t.value.questions}">
-            <div class="login-form-block p-3 m-3" style="display: none; max-width: 500px">
+            <div class="login-form-block p-3 m-3" id="q${m.key}" style="display: none; max-width: 500px">
                 <form class="question-answer">
                 <small>${t.value.description}</small>
                 <p>${m.value.text}</p>
@@ -65,7 +71,7 @@
             </div>
         </c:forEach>
     </c:forEach>
-    <div class="login-form-block" style="display: none;">
+    <div id="endTest" class="login-form-block" style="display: none;">
         <form>
             <h4>Тест "${test.name}" завершено</h4>
             <input type="hidden" name="testId" value="${testId}">

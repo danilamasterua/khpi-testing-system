@@ -19,7 +19,7 @@
             <div class="test-card">
                 <h3>${t.value.name}</h3>
                 <p>${t.value.description}</p>
-                <form action="loadTest" method="post">
+                <form action="loadTest" method="get">
                     <input type="hidden" value="${t.key}" name="testId">
                     <input type="submit" value="Завантажити тест" class="btn btn-primary">
                 </form>

@@ -102,3 +102,24 @@ function createUserSmallDiv(obj){
     usDiv.append(lastName);
     usDiv.append(email);
 }
+
+function changeAccType(obj){
+    let selOpt = obj.value;
+    switch (selOpt){
+        case "temp":
+            document.getElementById("tempAccess").style.display="block";
+            document.getElementById("permTimeAcc").style.display="none";
+            break;
+        case "permanent":
+            document.getElementById("tempAccess").style.display="none";
+            document.getElementById("permTimeAcc").style.display="none";
+            break;
+        case "permanentTime":
+            document.getElementById("tempAccess").style.display="none";
+            document.getElementById("permTimeAcc").style.display="block";
+            break;
+        default:
+            alert("Error");
+            break;
+    }
+}

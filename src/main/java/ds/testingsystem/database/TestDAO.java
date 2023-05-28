@@ -10,16 +10,16 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public class TestDAO {
-    private static final String SQL_GET_AVAILABLE_TESTS_FOR_USER = "select test.testId, test.name, test.description, test.userId, test.minToFin" +
+    private static final String SQL_GET_AVAILABLE_TESTS_FOR_USER = "select test.testId, test.name, test.description, test.userId" +
             " from test inner join groupaccess on test.testId = groupaccess.testId " +
             " where groupaccess.groupId in (select groupId from user where userId=?) and" +
             " test.testId not in (select testId from userpoints where userId=?) " ;
-    private static final String SQL_GET_PASSED_TEST = "select test.testId, test.name, test.description, test.userId, test.minToFin, userpoints.points " +
+    private static final String SQL_GET_PASSED_TEST = "select test.testId, test.name, test.description, test.userId, userpoints.points " +
             " from userpoints left join test on userpoints.testId=test.testId " +
             " where userpoints.userId = ? order by userpoints.datetime desc";
     private static final String SQL_GET_TEST_INFO_BY_ID = "select * from test where testId = ?";
     private static final String SQL_GET_TEST_BY_USER_ID = "select * from test where userId=?";
-    private static final String SQL_INSERT_TEST_DATA = "insert into test(name, description, userId, minToFin) values (?,?,?,?)";
+    private static final String SQL_INSERT_TEST_DATA = "insert into test(name, description, userId) values (?,?,?,?)";
     private static final String SQL_DELETE_TEST="delete from test where testId=?";
     private static final String SQL_UPDATE_TEST="UPDATE test set name=?, description=? where testId=?";
 
@@ -108,8 +108,7 @@ public class TestDAO {
             int c=1;
             statement.setString(c++, test.getName());
             statement.setString(c++, test.getDescription());
-            statement.setInt(c++, test.getUserId());
-            statement.setInt(c, test.getMinToFin());
+            statement.setInt(c, test.getUserId());
             statement.executeUpdate();
             int testId=-1;
             ResultSet resultSet = statement.getGeneratedKeys();
@@ -165,7 +164,6 @@ class TestMapper implements EntityMapper<Test>{
             retTest.setName(rs.getString(Fields.testName));
             retTest.setDescription(rs.getString(Fields.testDescription));
             retTest.setUserId(rs.getInt(Fields.testUserId));
-            retTest.setMinToFin(rs.getInt(Fields.testMinToFin));
         } catch (SQLException e){
             e.printStackTrace();
         }

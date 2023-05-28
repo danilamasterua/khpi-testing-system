@@ -73,10 +73,21 @@
             <div class="login-form-block">
                 <form action="grantAccess" method="get">
                     <input type="hidden" value="${testId}" name="testId">
-                    <label for="accStTime" class="form-label">Початок доступу до тесту</label>
-                    <input type="datetime-local" id="accStTime" class="form-control" name="accStTime">
-                    <label for="accFinTime" class="form-label">Кінець доступу до тесту</label>
-                    <input type="datetime-local" id="accFinTime" class="form-control" name="accFinTime">
+                    <select onchange="changeAccType(this)" class="form-select">
+                        <option value="temp">Тимчасовий доступ</option>
+                        <option value="permanent">Постійний доступ</option>
+                        <option value="permanentTime">Постійний доступ, з обмеженням часу</option>
+                    </select>
+                    <div id="tempAccess" style="display: block;">
+                        <label for="accStTime" class="form-label">Початок доступу до тесту</label>
+                        <input type="datetime-local" id="accStTime" class="form-control" name="accStTime">
+                        <label for="accFinTime" class="form-label">Кінець доступу до тесту</label>
+                        <input type="datetime-local" id="accFinTime" class="form-control" name="accFinTime">
+                    </div>
+                    <div id="permTimeAcc" style="display: none;">
+                        <label for="mtf" class="form-label">Час на проходження тесту</label>
+                        <input id="mtf" type="number" name="minToFin" class="form-control">
+                    </div>
                     <p class="row mb-0">
                         <button type="button" id="backMM" class="btn btn-light col m-2" onclick="backToTable(this)"><i class="bi bi-arrow-bar-left"></i> Назад</button>
                         <input type="submit" id="cMB" class="btn btn-primary float-end col m-2" value="Зберегти">

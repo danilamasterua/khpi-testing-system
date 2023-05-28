@@ -23,4 +23,7 @@ public class SupportController {
     public static void denyAccess(int groupId, int testId){
         GroupAccessDAO.denyAccess(groupId, testId);
     }
+    public static GroupAccess getAccessData(int testId, int groupId){
+        return GroupAccessDAO.getGroupAccessDataTest(testId, groupId);
+    }
 }
