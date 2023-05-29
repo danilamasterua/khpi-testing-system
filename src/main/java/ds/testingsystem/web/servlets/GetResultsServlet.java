@@ -20,6 +20,7 @@ public class GetResultsServlet extends HttpServlet {
         int testId = Integer.parseInt(req.getParameter("testId"));
         HashMap<Group, LinkedList<UserTestPoints>> info = TestController.getUserPointsByTestId(testId);
         req.setAttribute("gI", info);
+        req.setAttribute("testId", testId);
         getServletContext().getRequestDispatcher("/testStatistic.jsp").forward(req, resp);
     }
 }

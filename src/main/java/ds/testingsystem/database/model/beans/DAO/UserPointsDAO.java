@@ -7,11 +7,12 @@ import ds.testingsystem.database.model.beans.UserPoints;
 import ds.testingsystem.database.model.beans.UserTestPoints;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 
 public class UserPointsDAO {
     private static final String SQL_INSERT_USERPOINT="insert into userpoints(testId, userId, points, datetime) VALUES (?,?,?,?)";
-    private static final String SQL_GET_USERPOINT = "select user.userId, user.firstName, user.lastName, user.login, user.password, user.roleId, user.email, user.groupId, userpoints.points " +
+    private static final String SQL_GET_USERPOINT = "select user.userId, user.firstName, user.lastName, user.login, user.password, user.roleId, user.email, user.groupId, userpoints.points, userpoints.datetime " +
             "from user right join userpoints on user.userId=userpoints.userId " +
             "where user.groupId=? and userpoints.testId=?";
 
@@ -48,7 +49,8 @@ public class UserPointsDAO {
                         rs.getInt(Fields.userRoleId),
                         rs.getString(Fields.userEmail));
                 Double points = rs.getDouble("points");
-                utp.add(new UserTestPoints(user,points));
+                LocalDateTime ldt = rs.getTimestamp("datetime").toLocalDateTime();
+                utp.add(new UserTestPoints(user,points, ldt));
             }
             Connect.getInstance().commitAndClose(con);
         } catch (SQLException e){

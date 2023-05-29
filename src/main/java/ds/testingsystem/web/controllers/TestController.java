@@ -13,6 +13,7 @@ import ds.testingsystem.database.model.beans.UserAnswer;
 import ds.testingsystem.database.model.beans.UserAnswerList;
 import ds.testingsystem.database.model.beans.UserPoints;
 import ds.testingsystem.database.model.beans.UserTestPoints;
+import ds.testingsystem.services.GenerateExcelFile;
 import org.json.JSONObject;
 
 import java.sql.SQLException;
@@ -255,6 +256,12 @@ public class TestController {
         retTest.setQuestions(modules);
         return retTest;
     }
+
+    public static String generateExcelTestPoints(String fullPathName, int testId) throws SQLException {
+        Test test = TestDAO.getTestInfo(testId);
+        return GenerateExcelFile.generateExcel(fullPathName, getUserPointsByTestId(testId), test);
+    }
+
     private static Double getPointsDD(DoubleWrapper points, Question question) {
         switch (question.getDifficultId()) {
             case 1:

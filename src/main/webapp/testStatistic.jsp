@@ -12,17 +12,23 @@
 <body>
 <jsp:include page="servicejsp/standardHeader.jsp"></jsp:include>
 <main>
+    <form action="getResults/xlsFile">
+        <input type="hidden" name="testId" value="${testId}">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-file-spreadsheet"></i> Завантажити</button>
+    </form>
     <c:forEach var="g" items="${gI.entrySet()}">
         <h4>${g.key.name}</h4>
         <table class="table table-stripped-columns">
             <tr>
                 <th>Студент</th>
                 <th>Оцінка</th>
+                <th>Дата оцінювання</th>
             </tr>
             <c:forEach var="u" items="${g.value}">
                 <tr>
                     <td>${u.user.firstName} ${u.user.lastName}</td>
                     <td>${u.points}</td>
+                    <td>${u.dateTime}</td>
                 </tr>
             </c:forEach>
         </table>
