@@ -63,7 +63,7 @@ public class GenerateExcelFile {
 
         Cell datetime = rowHeader.createCell(3);
         datetime.setCellStyle(headerStyle);
-        points.setCellValue("Дата та час оцінювання");
+        datetime.setCellValue("Дата та час оцінювання");
     }
 
     private static void addStudentRow(int i, Sheet sheet, Workbook workbook, UserTestPoints utp){
@@ -92,7 +92,8 @@ public class GenerateExcelFile {
         points.setCellValue(utp.getPoints());
 
         Cell datetime = row.createCell(3);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        datetime.setCellStyle(style);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
         datetime.setCellValue(utp.getDateTime().format(formatter));
     }
     public static String rfc5987_encode(final String s) {
