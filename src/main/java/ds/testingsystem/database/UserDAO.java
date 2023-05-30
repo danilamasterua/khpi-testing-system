@@ -10,6 +10,7 @@ public class UserDAO {
     private static final String SQL_GET_USERS_TEACHERS = "select * from user where roleId=2 and blockstatus=0";
     private static final String SQL_INSERT_NEW_USER = "insert into user(firstName, lastName, login, password, roleId, email, groupId) VALUES (?,?,?,?,?,?,?)";
     private static final String SQL_GET_USERS_BY_GROUP = "select * from user where groupId=? and blockstatus=0";
+    private static final String SQL_GET_USER_BY_ID = "select * from user where userId=?";
 
     public static User getUserInfo(String login) throws SQLException{
         User user = new User();
@@ -90,6 +91,25 @@ public class UserDAO {
             e.printStackTrace();
         }
         return users;
+    }
+
+    public static User getUserById(int userId){
+        User user = new User();
+        Connection con=null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_GET_USER_BY_ID);
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            UserMapper mapper = new UserMapper();
+            while (rs.next()){
+                user = mapper.mapRow(rs);
+            }
+        } catch (SQLException e){
+            Connect.getInstance().rollbackAndClose(con);
+            e.printStackTrace();
+        }
+        return user;
     }
 }
 

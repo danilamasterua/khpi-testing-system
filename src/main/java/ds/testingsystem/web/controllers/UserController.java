@@ -51,4 +51,5 @@ public class UserController {
     public static int createEdGroup(Group g){
         return GroupDAO.insertGroup(g);
     }
+    public static User getUserById(int userId){return UserDAO.getUserById(userId);}
 }

@@ -27,9 +27,13 @@
                             <td>
                                 <details>
                                     <summary>${g.value.name}</summary>
+                                    <table class="table">
                                     <c:forEach var="u" items="${g.value.users}">
-                                        <p>${u.value.lastName}, ${u.value.firstName}</p>
+                                        <tr>
+                                            <td>${u.value.firstName} ${u.value.lastName}</td>
+                                        </tr>
                                     </c:forEach>
+                                    </table>
                                 </details>
                             </td>
                             <td>

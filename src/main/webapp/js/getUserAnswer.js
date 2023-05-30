@@ -72,7 +72,8 @@ function getTestPoints(obj){
 
 let startTime;
 let duration;
-let finTime
+let finTime;
+let timer;
 
 function startTimer(obj){
     startTime = Math.floor(Date.now()/1000);
@@ -84,7 +85,7 @@ function startTimer(obj){
         finTime=new Date(form.elements['finAccDate'].value);
         duration = Math.floor((finTime-startTime)/1000);
         console.log(duration);
-    } else if (minToFin!=""){
+    } else if (minToFin!=""&&minToFin!="0"){
         duration = Number.parseInt(minToFin) * 60;
         console.log("Starting test with minToFin");
         console.log(duration);
@@ -92,7 +93,7 @@ function startTimer(obj){
         console.log("Starting test without timer");
     }
     if(finTestDate!=""||minToFin!=""){
-        setInterval(updateTimer, 1000);
+        timer = setInterval(updateTimer, 1000);
     }
 }
 
@@ -114,6 +115,7 @@ function updateTimer(){
 
         document.getElementById("timer").textContent = formattedTime;
     } else {
+        clearTimeout(timer);
         let qDivs = document.querySelectorAll('[id^="q"]');
         for (let qDiv of qDivs){
             qDiv.style.display="none";

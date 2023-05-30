@@ -17,13 +17,25 @@
   <main>
     <h1>Панель керування тестами</h1>
     <form action="CreateNewUser.jsp">
-      <input type="submit" value="Створити обліковий запис викладача">
+      <input type="submit" value="Створити обліковий запис викладача" class="btn btn-primary">
     </form>
     <div class="scroll-list">
       <c:forEach var="u" items="${users}">
         <div class="test-card">
           <h2>${u.value.firstName} ${u.value.lastName}</h2>
-          <p><b>Email:</b> ${u.value.email}</p>
+          <p>
+              <b>Email:</b> ${u.value.email}
+          </p>
+            <div class="btn-group">
+                <form class="btn" action="updateUser">
+                    <input type="hidden" name="userId" value="${u.key}">
+                    <button type="submit" class="btn btn-primary">Редагувати користувача</button>
+                </form>
+            </div>
+            <form class="btn">
+                <input type="hidden" name="userId" value="${u.key}">
+                <button type="submit" class="btn btn-primary">Заблокувати користувача</button>
+            </form>
         </div>
       </c:forEach>
     </div>

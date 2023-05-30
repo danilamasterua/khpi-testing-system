@@ -10,7 +10,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 @WebFilter(filterName = "adminFilter", value = {
-    "/userControl", "/CreateNewUser.jsp"
+    "/userControl", "/CreateNewUser.jsp", "/updateUser"
 })
 public class AdminFilter implements Filter {
     private ServletContext servletContext;
