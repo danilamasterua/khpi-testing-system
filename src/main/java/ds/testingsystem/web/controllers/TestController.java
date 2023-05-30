@@ -256,12 +256,13 @@ public class TestController {
         retTest.setQuestions(modules);
         return retTest;
     }
-
     public static String generateExcelTestPoints(String fullPathName, int testId) throws SQLException {
         Test test = TestDAO.getTestInfo(testId);
         return GenerateExcelFile.generateExcel(fullPathName, getUserPointsByTestId(testId), test);
     }
-
+    public static void blockTest(int testId){TestDAO.blockTest(testId);}
+    public static void unblockTest(int testId){TestDAO.unblockTest(testId);}
+    public static HashMap<Integer, Test> getBlockedTest(int userId) throws SQLException {return TestDAO.getBlockedTestByUserId(userId);}
     private static Double getPointsDD(DoubleWrapper points, Question question) {
         switch (question.getDifficultId()) {
             case 1:

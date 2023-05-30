@@ -13,15 +13,20 @@ public class TestDAO {
     private static final String SQL_GET_AVAILABLE_TESTS_FOR_USER = "select test.testId, test.name, test.description, test.userId" +
             " from test inner join groupaccess on test.testId = groupaccess.testId " +
             " where groupaccess.groupId in (select groupId from user where userId=?) and" +
-            " test.testId not in (select testId from userpoints where userId=?) " ;
+            " test.testId not in (select testId from userpoints where userId=?)  and " +
+            " test.testId in (select testId from groupaccess where groupaccess.accFinTime<now() or groupaccess.accFinTime is null)" +
+            " and test.blockstatus=0";
     private static final String SQL_GET_PASSED_TEST = "select test.testId, test.name, test.description, test.userId, userpoints.points " +
             " from userpoints left join test on userpoints.testId=test.testId " +
             " where userpoints.userId = ? order by userpoints.datetime desc";
     private static final String SQL_GET_TEST_INFO_BY_ID = "select * from test where testId = ?";
-    private static final String SQL_GET_TEST_BY_USER_ID = "select * from test where userId=?";
-    private static final String SQL_INSERT_TEST_DATA = "insert into test(name, description, userId) values (?,?,?,?)";
+    private static final String SQL_GET_TEST_BY_USER_ID = "select * from test where userId=? and blockstatus=0";
+    private static final String SQL_GET_BLOCKED_TEST_BY_USER_ID = "select * from test where userId=? and blockstatus=0";
+    private static final String SQL_INSERT_TEST_DATA = "insert into test(name, description, userId) values (?,?,?)";
     private static final String SQL_DELETE_TEST="delete from test where testId=?";
     private static final String SQL_UPDATE_TEST="UPDATE test set name=?, description=? where testId=?";
+    private static final String SQL_BLOCK_TEST="UPDATE test set blockstatus=1 where testId=?";
+    private static final String SQL_UNBLOCK_TEST="UPDATE test set blockstatus=0 where testId=?";
 
     public static HashMap<Integer, Test> getAvailableTest(User user) throws SQLException{
         HashMap<Integer, Test> retMap = new HashMap<>();
@@ -100,6 +105,26 @@ public class TestDAO {
         return retTests;
     }
 
+    public static HashMap<Integer, Test> getBlockedTestByUserId(int userId) throws SQLException{
+        HashMap<Integer, Test> retTests = new HashMap<>();
+        Connection con = null;
+        try {
+            con=Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_GET_BLOCKED_TEST_BY_USER_ID);
+            statement.setInt(1,userId);
+            ResultSet resultSet = statement.executeQuery();
+            TestMapper mapper = new TestMapper();
+            while (resultSet.next()){
+                retTests.put(resultSet.getInt(Fields.testId), mapper.mapRow(resultSet));
+            }
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            Connect.getInstance().rollbackAndClose(con);
+            System.out.println(e.getMessage());
+        }
+        return retTests;
+    }
+
     public static int insertTestData(Test test){
         Connection con = null;
         try {
@@ -153,7 +178,32 @@ public class TestDAO {
             e.printStackTrace();
         }
     }
-
+    public static void blockTest(int testId){
+        Connection con = null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_BLOCK_TEST);
+            statement.setInt(1, testId);
+            statement.executeUpdate();
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            Connect.getInstance().rollbackAndClose(con);
+            e.printStackTrace();
+        }
+    }
+    public static void unblockTest(int testId){
+        Connection con = null;
+        try {
+            con=Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_UNBLOCK_TEST);
+            statement.setInt(1, testId);
+            statement.executeUpdate();
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            Connect.getInstance().rollbackAndClose(con);
+            e.printStackTrace();
+        }
+    }
 }
 
 class TestMapper implements EntityMapper<Test>{

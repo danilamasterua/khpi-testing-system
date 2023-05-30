@@ -1,9 +1,8 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%--<jsp:useBean id="tests" class="java.util.HashMap"></jsp:useBean>--%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <html>
 <head>
-    <title>Панель керування тестами</title>
+    <title>Заблоковані тести</title>
     <link rel="stylesheet" href="css/dropdown.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
@@ -12,12 +11,7 @@
 <body>
 <jsp:include page="servicejsp/standardHeader.jsp"></jsp:include>
 <main>
-    <h2>Панель керування тестами</h2>
-    <p class="row">
-    <form action="create-test" class="col">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Створити тест</button>
-    </form>
-    <a href="get-blocked-test" class="btn btn-link col">Заблоковані тести</a>
+    <h2>Заблоковані тести</h2>
     </p>
     <div class="scroll-list">
         <c:forEach items="${tests}" var="t">
@@ -25,9 +19,9 @@
                 <h3>${t.value.name}</h3>
                 <p>${t.value.description}</p>
                 <p class="btn-group">
-                <form action="blockTest" method="post" class="btn">
+                <form action="unblockTest" method="post" class="btn">
                     <input type="hidden" value="${t.key}" name="testId">
-                    <button type="submit" class="btn btn-warning"><i class="bi bi-lock"></i> Блокувати тест</button>
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-unlock"></i> Розблокувати тест</button>
                 </form>
                 <form action="loadTestAccessPage" method="get" class="btn">
                     <input type="hidden" value="${t.key}" name="testId">
@@ -46,6 +40,5 @@
         </c:forEach>
     </div>
 </main>
-<jsp:include page="servicejsp/footer.jsp"></jsp:include>
 </body>
 </html>
