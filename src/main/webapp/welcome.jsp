@@ -13,7 +13,7 @@
 <jsp:include page="servicejsp/standardHeader.jsp"></jsp:include>
 <main>
     <h2>Доступні тести</h2>
-    <a href="getTests" class="btn btn-link">Виконані тести</a>
+    <a href="getPassedTests" class="btn btn-link">Виконані тести</a>
     <div class="scroll-list">
         <c:forEach var="t" items="${model.tests}">
             <div class="test-card">

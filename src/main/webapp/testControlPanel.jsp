@@ -13,12 +13,10 @@
 <jsp:include page="servicejsp/standardHeader.jsp"></jsp:include>
 <main>
     <h2>Панель керування тестами</h2>
-    <p class="row">
-    <form action="create-test" class="col">
-        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Створити тест</button>
-    </form>
-    <a href="get-blocked-test" class="btn btn-link col">Заблоковані тести</a>
-    </p>
+    <div class="btn-group">
+        <a href="create-test" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Створити тест</a>
+        <a href="get-blocked-test" class="btn btn-light">Заблоковані тести</a>
+    </div>
     <div class="scroll-list">
         <c:forEach items="${tests}" var="t">
             <div class="test-card">

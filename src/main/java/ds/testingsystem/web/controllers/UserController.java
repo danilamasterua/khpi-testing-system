@@ -1,15 +1,21 @@
 package ds.testingsystem.web.controllers;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.ibm.icu.text.Transliterator;
 import ds.testingsystem.database.GroupDAO;
+import ds.testingsystem.database.TestDAO;
 import ds.testingsystem.database.UserDAO;
 import ds.testingsystem.database.model.Group;
 import ds.testingsystem.database.model.User;
+import ds.testingsystem.database.model.beans.ChangePassword;
 import ds.testingsystem.services.GeneratePassword;
 import ds.testingsystem.services.Sender;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 public class UserController {
@@ -52,4 +58,41 @@ public class UserController {
         return GroupDAO.insertGroup(g);
     }
     public static User getUserById(int userId){return UserDAO.getUserById(userId);}
+    public static void updateUser(User user){UserDAO.updateUser(user);}
+    public static void blockUser(int userId){UserDAO.blockUser(userId);}
+    public static HashMap<Integer, User> getBlockedUsers(){return UserDAO.getBlockedUsers();}
+    public static void unblockUser(int userId){UserDAO.unblockUser(userId);}
+    public static int prepareChangePassword(String jsonData){
+        Gson g = new Gson();
+        JsonObject o = g.fromJson(jsonData, JsonObject.class);
+        int userId = o.get("userId").getAsInt();
+        String oldPassword = o.get("oldPassword").getAsString();
+        String newPassword = o.get("newPassword").getAsString();
+        User user = UserDAO.getUserById(userId);
+        String encryptedOldPassword = DigestUtils.sha256Hex(oldPassword);
+        if(user.getPassword().equals(encryptedOldPassword)){
+            String encryptedNewPassword = DigestUtils.sha256Hex(newPassword);
+            String verCode = GeneratePassword.genPass();
+            String encryptedVerCode = DigestUtils.sha256Hex(verCode);
+            ChangePassword chgPwd = new ChangePassword(userId, encryptedVerCode, encryptedNewPassword);
+            if(UserDAO.prepareChangePassword(chgPwd)==200){
+                Sender sender = new Sender("danmas.pp.ua@gmail.com", "opffixxoixybdlwy");
+                sender.send("DS Testing System: Change password","Reply, if you don`t change password!\nVerification code: "+verCode, "danmas.pp.ua", user.getEmail());
+                return 200;
+            } else {
+                return 500;
+            }
+        }
+        return 401;
+    }
+    public static int changePassword(String verCode, int userId){
+        ChangePassword cp = UserDAO.getPreparedChangePassword(userId);
+        String encryptedInpVerCode = DigestUtils.sha256Hex(verCode);
+        Duration duration = Duration.between(cp.getLocalDateTime(), LocalDateTime.now());
+        long minutes = duration.toMinutes();
+        if(encryptedInpVerCode.equals(cp.getVerCode())&&minutes<=15){
+            return UserDAO.setNewPassword(userId, cp.getNewPassword());
+        }
+        return 401;
+    }
 }

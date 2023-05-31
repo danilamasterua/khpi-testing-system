@@ -10,19 +10,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.sql.SQLException;
 
-@WebServlet("/test-control-panel")
-public class LoadTestContolPanelServlet extends HttpServlet {
+@WebServlet("/getPassedTests")
+public class GetPassedTestsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
         Model model = (Model) session.getAttribute("model");
-        try {
-            req.setAttribute("tests", TestController.getTestsCreatedByUser(model.getCurrentUser().getUserId()));
-            getServletContext().getRequestDispatcher("/testControlPanel.jsp").forward(req, resp);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        model.setPassedTests(TestController.getPassedTests(model.getCurrentUser()));
+        req.setAttribute("model", model);
+        session.setAttribute("model", model);
+        getServletContext().getRequestDispatcher("/passedTests.jsp").forward(req, resp);
     }
 }

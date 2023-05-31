@@ -19,4 +19,19 @@ public class UpdateUserServlet extends HttpServlet {
         req.setAttribute("user", user);
         getServletContext().getRequestDispatcher("/updateUser.jsp").forward(req,resp);
     }
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        int userId = Integer.parseInt(req.getParameter("userId"));
+        String firstName = req.getParameter("firstName");
+        String lastName = req.getParameter("lastName");
+        String email = req.getParameter("email");
+        User user = new User();
+        user.setUserId(userId);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        UserController.updateUser(user);
+        resp.sendRedirect(req.getContextPath()+"/userControl");
+    }
 }

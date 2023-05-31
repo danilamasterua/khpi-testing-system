@@ -9,8 +9,11 @@
 </head>
 <body>
 <main>
+
+    <div class="container">
     <div class="login-form-block">
         <form action="updateUser" method="post">
+            <input type="hidden" name="userId" value="${user.userId}">
             <label for="firstName" class="form-label">Ім'я</label>
             <input id="firstName" type="text" class="form-control" placeholder="Ім'я" name="firstName" value="${user.firstName}">
             <label for="lastName" class="form-label">Прізвище</label>
@@ -19,6 +22,7 @@
             <input id="email" type="email" class="form-control" placeholder="EMail" name="email" value="${user.email}">
             <input type="submit" value="Створити користувача" class="btn btn-primary">
         </form>
+    </div>
     </div>
 </main>
 </body>

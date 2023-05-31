@@ -15,10 +15,11 @@
 <body>
   <jsp:include page="servicejsp/standardHeader.jsp"></jsp:include>
   <main>
-    <h1>Панель керування тестами</h1>
-    <form action="CreateNewUser.jsp">
-      <input type="submit" value="Створити обліковий запис викладача" class="btn btn-primary">
-    </form>
+    <h1>Панель керування користувачами</h1>
+      <div class="btn-group">
+          <a href="CreateNewUser.jsp" class="btn btn-primary">Створити обліковий запис користувача</a>
+          <a href="getBlockedUsers" class="btn btn-light">Заблоковані користувачі</a>
+      </div>
     <div class="scroll-list">
       <c:forEach var="u" items="${users}">
         <div class="test-card">
@@ -27,15 +28,15 @@
               <b>Email:</b> ${u.value.email}
           </p>
             <div class="btn-group">
+                <form class="btn" action="blockUser" method="post">
+                    <input type="hidden" name="userId" value="${u.key}">
+                    <button type="submit" class="btn btn-warning"><i class="bi bi-lock"></i> Заблокувати користувача</button>
+                </form>
                 <form class="btn" action="updateUser">
                     <input type="hidden" name="userId" value="${u.key}">
                     <button type="submit" class="btn btn-primary">Редагувати користувача</button>
                 </form>
             </div>
-            <form class="btn">
-                <input type="hidden" name="userId" value="${u.key}">
-                <button type="submit" class="btn btn-primary">Заблокувати користувача</button>
-            </form>
         </div>
       </c:forEach>
     </div>

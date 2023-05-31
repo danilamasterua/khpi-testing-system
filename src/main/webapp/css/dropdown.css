@@ -27,3 +27,7 @@
 .dropdown:hover .dropdown-child {
     display: block;
 }
+
+.dropdown-child a:hover{
+    background-color: lightgrey;
+}

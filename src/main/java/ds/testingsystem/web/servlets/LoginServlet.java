@@ -27,7 +27,7 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = req.getSession();
                 Model model = new Model(UserController.getUserDataFromDB(login));
                 session.setAttribute("model", model);
-                getServletContext().getRequestDispatcher("/getTests").forward(req, resp);
+                resp.sendRedirect(req.getContextPath()+"/getTests");
             } else {
                 RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher("/index.jsp");
                 req.setAttribute("error", "Пароль або логін неправильні");

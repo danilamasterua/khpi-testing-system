@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/userControl")
-public class UserControlServlet extends HttpServlet {
+@WebServlet("/getBlockedUsers")
+public class GetBlockedUsersServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setAttribute("users", UserController.getTeachers());
-        getServletContext().getRequestDispatcher("/userControlPanel.jsp").forward(req, resp);
+        req.setAttribute("users", UserController.getBlockedUsers());
+        getServletContext().getRequestDispatcher("/blockedUsers.jsp").forward(req, resp);
     }
 }

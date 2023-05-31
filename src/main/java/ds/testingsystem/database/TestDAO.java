@@ -21,7 +21,7 @@ public class TestDAO {
             " where userpoints.userId = ? order by userpoints.datetime desc";
     private static final String SQL_GET_TEST_INFO_BY_ID = "select * from test where testId = ?";
     private static final String SQL_GET_TEST_BY_USER_ID = "select * from test where userId=? and blockstatus=0";
-    private static final String SQL_GET_BLOCKED_TEST_BY_USER_ID = "select * from test where userId=? and blockstatus=0";
+    private static final String SQL_GET_BLOCKED_TEST_BY_USER_ID = "select * from test where userId=? and blockstatus=1";
     private static final String SQL_INSERT_TEST_DATA = "insert into test(name, description, userId) values (?,?,?)";
     private static final String SQL_DELETE_TEST="delete from test where testId=?";
     private static final String SQL_UPDATE_TEST="UPDATE test set name=?, description=? where testId=?";

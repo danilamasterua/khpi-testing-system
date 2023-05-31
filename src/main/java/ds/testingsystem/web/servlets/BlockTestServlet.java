@@ -17,7 +17,7 @@ public class BlockTestServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int testId=Integer.parseInt(req.getParameter("testId"));
         TestController.blockTest(testId);
-        getServletContext().getRequestDispatcher("/test-control-panel").forward(req, resp);
+        resp.sendRedirect(req.getContextPath()+"/test-control-panel");
     }
 
 }
