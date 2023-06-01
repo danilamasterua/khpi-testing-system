@@ -1,7 +1,7 @@
-let notPassedQId = [];
 function getAnswer(obj){
     obj.disabled = 'true';
-    let form = document.getElementById(obj.id).parentElement
+    let form = document.getElementById(obj.id).parentElement;
+    form.elements['isAnswered'].value="true"
     let data={
         qId: form.elements['qId'].value,
         qTypeId: form.elements['qTypeId'].value,
@@ -44,13 +44,38 @@ function startTest(obj){
     startform.nextElementSibling.style.display="flex";
 }
 
+function skipQuestion(obj){
+    let form = document.getElementById(obj.id).parentElement;
+    let isAnswered = form.elements['isAnswered'].value;
+    if(isAnswered==="false"){
+        if(document.getElementById("sqZag")!=null) {
+            document.getElementById("sqZag").remove();
+        }
+        let cont = document.getElementById("skippedQuestions");
+        let zag = document.createElement("h4");
+        zag.setAttribute("id", "sqZag");
+        zag.append("Ви пропустили такі запитання");
+        cont.prepend(zag);
+        let btn = document.createElement("button");
+        btn.setAttribute("type", "button")
+        btn.setAttribute("class", "btn btn-link");
+        btn.setAttribute("id", obj.parentElement.parentElement.id+"b");
+        btn.setAttribute("onclick", "passQuestion(this)");
+        btn.append(form.querySelector('[id^="qT"]').textContent);
+        cont.append(btn);
+        console.log(form.parentElement.id);
+    }
+    openNextBlock(obj);
+}
+
 function openNextBlock(obj){
     let sD = obj.parentElement.parentElement;
     sD.style.display="none";
     sD.nextElementSibling.style.display="flex";
 }
 
-function getTestPoints(obj){
+function getTestPoints(){
+    let obj = document.getElementById("endTestBtn");
     obj.disabled=true;
     document.getElementById("loading").style.display = "flex";
     let testInfo = obj.parentElement;
@@ -121,5 +146,20 @@ function updateTimer(){
             qDiv.style.display="none";
         }
         document.getElementById("endTest").style.display="flex";
+        getTestPoints();
     }
+}
+
+function passQuestion(obj){
+    let qid = obj.id.slice(0,-1);
+    obj.remove();
+    document.getElementById(qid).style.display="flex";
+    document.getElementById("endTest").style.display="none";
+    let el = document.getElementById(qid).querySelector("form").elements['skip'];
+    el.setAttribute("onclick", "goToEndTest(this)");
+}
+
+function goToEndTest(obj){
+    obj.parentElement.style.display="none";
+    document.getElementById("endTest").style.display="flex";
 }

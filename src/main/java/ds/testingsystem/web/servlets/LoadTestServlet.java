@@ -22,7 +22,7 @@ public class LoadTestServlet extends HttpServlet {
         HttpSession session = req.getSession();
         Model model = (Model) session.getAttribute("model");
         try {
-            req.setAttribute("test", TestController.loadTestForPass(testId));
+            req.setAttribute("test", TestController.loadTestForPass(testId, model.getCurrentUser().getUserId()));
             req.setAttribute("nowDate", LocalDateTime.now());
             req.setAttribute("testId", testId);
             req.setAttribute("accessData", SupportController.getAccessData(testId, model.getCurrentUser().getGroupId()));

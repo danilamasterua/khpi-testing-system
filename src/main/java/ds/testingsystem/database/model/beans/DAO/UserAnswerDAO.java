@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 
 public class UserAnswerDAO {
-    private static final String SQL_INSERT_USERANSWER_WITH_ANSWER_ID = "insert into useranswer(answerId, questionId, userId, answerdate) values (?,?,?,?)";
-    private static final String SQL_INSERT_USERANSWER_WITH_TEXT = "INSERT INTO useranswer(questionId, userId, text, answerdate) VALUES (?,?,?,?)";
-    private static final String SQL_GET_USERANSWER_BY_QUESTION_ID = "select * from useranswer where userId=? and questionId=? and answerdate>?";
-    private static final String SQL_GET_QUESTION_IDS_BY_USER = "select questionId from useranswer where userId=? and answerdate>?";
+    private static final String SQL_INSERT_USERANSWER_WITH_ANSWER_ID = "insert into useranswer(answerId, questionId, userId, answerdate) values (?,?,?,?) on duplicate key update answerId=?";
+    private static final String SQL_INSERT_USERANSWER_WITH_TEXT = "INSERT INTO useranswer(questionId, userId, text, answerdate) VALUES (?,?,?,?) on duplicate key update text=?";
+    private static final String SQL_GET_USERANSWER_BY_QUESTION_ID = "select * from useranswer where userId=? and questionId=?";
+    private static final String SQL_GET_QUESTION_IDS_BY_USER = "select questionId from useranswer where userId=?";
+    private static final String SQL_INSERT_PREPARED_ANSWER = "insert into useranswer(questionId, userId) values (?,?) on duplicate key update text=null, answerId=null";
+    private static final String SQL_GET_NOT_PASSED_QUESTION = "select questionId from useranswer where userId=? and answerId is null and text is null";
 
     public static void setUserAnswerOnAnswerId(UserAnswer userAnswer) throws SQLException{
         Connection con = null;
@@ -24,7 +26,8 @@ public class UserAnswerDAO {
             statement.setInt(c++, userAnswer.getAnswerId());
             statement.setInt(c++, userAnswer.getqId());
             statement.setInt(c++, userAnswer.getUserId());
-            statement.setTimestamp(c, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setTimestamp(c++, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setInt(c, userAnswer.getAnswerId());
             statement.executeUpdate();
             Connect.getInstance().commitAndClose(con);
         } catch (SQLException ex){
@@ -41,7 +44,8 @@ public class UserAnswerDAO {
             statement.setInt(c++, userAnswer.getqId());
             statement.setInt(c++, userAnswer.getUserId());
             statement.setString(c++, userAnswer.getText());
-            statement.setTimestamp(c, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setTimestamp(c++, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setString(c, userAnswer.getText());
             statement.executeUpdate();
             Connect.getInstance().commitAndClose(con);
         } catch (SQLException ex){
@@ -49,7 +53,7 @@ public class UserAnswerDAO {
             System.out.println(ex.getMessage());
         }
     }
-    public static LinkedList<UserAnswer> getUserAnswersByQuestionId(int qId, int userId, LocalDateTime startDate){
+    public static LinkedList<UserAnswer> getUserAnswersByQuestionId(int qId, int userId){
         LinkedList<UserAnswer> userAnswers = new LinkedList<>();
         Connection con = null;
         try {
@@ -57,7 +61,6 @@ public class UserAnswerDAO {
             PreparedStatement statement = con.prepareStatement(SQL_GET_USERANSWER_BY_QUESTION_ID);
             statement.setInt(1, userId);
             statement.setInt(2, qId);
-            statement.setTimestamp(3, Timestamp.valueOf(startDate));
             ResultSet rs = statement.executeQuery();
             UserAnswerMapper mapper = new UserAnswerMapper();
             while (rs.next()){
@@ -71,14 +74,13 @@ public class UserAnswerDAO {
         return userAnswers;
     }
 
-    public static LinkedList<Integer> getUserQuestions(int userId, LocalDateTime startDate){
+    public static LinkedList<Integer> getUserQuestions(int userId){
         LinkedList<Integer> questionIdS = new LinkedList<>();
         Connection con = null;
         try {
             con=Connect.getInstance().getConnection();
             PreparedStatement statement = con.prepareStatement(SQL_GET_QUESTION_IDS_BY_USER);
             statement.setInt(1, userId);
-            statement.setTimestamp(2, Timestamp.valueOf(startDate));
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
                 questionIdS.add(rs.getInt("questionId"));
@@ -89,6 +91,39 @@ public class UserAnswerDAO {
             e.printStackTrace();
         }
         return questionIdS;
+    }
+
+    public static void prepareAnswer(UserAnswer ua){
+        Connection con = null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_INSERT_PREPARED_ANSWER);
+            statement.setInt(1, ua.getqId());
+            statement.setInt(2, ua.getUserId());
+            statement.executeUpdate();
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            e.printStackTrace();
+            Connect.getInstance().rollbackAndClose(con);
+        }
+    }
+
+    public static LinkedList<Integer> getNotPassedQuestions(int userId){
+        LinkedList<Integer> notPassedQuestions = new LinkedList<>();
+        Connection con = null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_GET_NOT_PASSED_QUESTION);
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                notPassedQuestions.add(rs.getInt(Fields.questionId));
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+            Connect.getInstance().rollbackAndClose(con);
+        }
+        return notPassedQuestions;
     }
 }
 

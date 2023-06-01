@@ -3,8 +3,8 @@ package ds.testingsystem.database.model.beans;
 import java.time.LocalDateTime;
 
 public class UserAnswer {
-    private int userId;
-    private int answerId;
+    private Integer userId;
+    private Integer answerId;
     private int qId;
     private String text;
     private LocalDateTime ansDateTime;
@@ -38,7 +38,7 @@ public class UserAnswer {
         this.ansDateTime = ansDateTime;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
@@ -46,12 +46,12 @@ public class UserAnswer {
         this.userId = userId;
     }
 
-    public int getAnswerId() {
+    public Integer getAnswerId() {
         return answerId;
     }
 
-    public void setAnswerId(int answerId) {
-        this.answerId = answerId;
+    public void setAnswerId(Integer answerId) {
+        this.answerId=answerId;
     }
 
     public int getqId() {

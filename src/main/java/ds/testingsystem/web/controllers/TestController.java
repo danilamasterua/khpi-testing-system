@@ -172,32 +172,38 @@ public class TestController {
 
     public static void deleteModule(int moduleId){ModuleDAO.deleteModule(moduleId);}
 
-    public static double getPoints(int userId, LocalDateTime startTime) throws SQLException {
+    public static double getPoints(int userId) throws SQLException {
         DoubleWrapper points = new DoubleWrapper();
-        LinkedList<Integer> questionIdS = UserAnswerDAO.getUserQuestions(userId, startTime);
+        LinkedList<Integer> questionIdS = UserAnswerDAO.getUserQuestions(userId);
+        System.out.println("qIds{\n"+questionIdS+"\n}");
         for (int id:questionIdS){
-            LinkedList<UserAnswer> ua = UserAnswerDAO.getUserAnswersByQuestionId(id, userId, startTime);
+            LinkedList<UserAnswer> ua = UserAnswerDAO.getUserAnswersByQuestionId(id, userId);
+            System.out.println("ua={\n"+ua+"\n}");
             Question question = QuestionDAO.getQuestion(id);
             HashMap<Integer, Answer> qAnswers = AnswerDAO.getAnswerFromQuestion(id);
-            ua.forEach(a->{
-                Answer answer = qAnswers.get(a.getAnswerId());
-                if (question.getqTypeId()==1||question.getqTypeId()==2) {
-                    if (answer.isRight()) {
-                        points.setValue(getPointsDD(points, question));
-                    }
-                } else if (question.getqTypeId()==3) {
-                    if(answer.getText().equals(a.getText())){
-                        points.setValue(getPointsDD(points, question));
+            ua.forEach(a -> {
+                System.out.println("aId" + a.getAnswerId());
+                if (a.getAnswerId()!=0) {
+                    Answer answer = qAnswers.get(a.getAnswerId());
+                    if (question.getqTypeId() == 1 || question.getqTypeId() == 2) {
+                        if (answer.isRight()) {
+                            points.setValue(getPointsDD(points, question));
+                        }
+                    } else if (question.getqTypeId() == 3) {
+                        if (answer.getText().equals(a.getText())) {
+                            points.setValue(getPointsDD(points, question));
+                        }
                     }
                 }
             });
         }
+
         return points.getValue();
     }
 
-    public static double getMaxPoint(int userId, LocalDateTime startTime) throws SQLException {
+    public static double getMaxPoint(int userId) throws SQLException {
         DoubleWrapper points = new DoubleWrapper();
-        LinkedList<Integer> questionIdS = UserAnswerDAO.getUserQuestions(userId, startTime);
+        LinkedList<Integer> questionIdS = UserAnswerDAO.getUserQuestions(userId);
         for (int id:questionIdS){
             Question question = QuestionDAO.getQuestion(id);
             HashMap<Integer, Answer> qAnswers = AnswerDAO.getAnswerFromQuestion(id);
@@ -241,20 +247,14 @@ public class TestController {
         }
         return retHashMap;
     }
-    public static Test loadTestForPass(int testId) throws SQLException {
-        Test retTest = TestDAO.getTestInfo(testId);
-        HashMap<Integer, Module> modules = ModuleDAO.getModulesFromTest(testId);
-        for (Map.Entry<Integer, Module> entry:modules.entrySet()){
-            HashMap<Integer, Question> questionsOrig = QuestionDAO.getQuestionsFromModule(entry.getKey());
-            HashMap<Integer, Question> questions = getRandomQuestions(entry.getValue().getqCount(), questionsOrig);
-            for (Map.Entry<Integer, Question> questionEntry:questions.entrySet()){
-                HashMap<Integer, Answer> answers = AnswerDAO.getAnswerFromQuestion(questionEntry.getKey());
-                questionEntry.getValue().setAnswers(answers);
-            }
-            entry.getValue().setQuestions(questions);
+    public static Test loadTestForPass(int testId, int userId) throws SQLException {
+        LinkedList<Integer> npq = UserAnswerDAO.getNotPassedQuestions(userId);
+        System.out.println(npq.size());
+        if(npq.size()==0){
+            return loadTestWithRandomQuestions(testId, userId);
+        } else {
+            return loadTestWithNotPassedQuestion(testId, npq);
         }
-        retTest.setQuestions(modules);
-        return retTest;
     }
     public static String generateExcelTestPoints(String fullPathName, int testId) throws SQLException {
         Test test = TestDAO.getTestInfo(testId);
@@ -278,6 +278,43 @@ public class TestController {
                 throw new RuntimeException("Unsupported difficult ID");
         }
         return points.getValue();
+    }
+    private static Test loadTestWithRandomQuestions(int testId, int userId) throws SQLException {
+        Test retTest = TestDAO.getTestInfo(testId);
+        HashMap<Integer, Module> modules = ModuleDAO.getModulesFromTest(testId);
+        for (Map.Entry<Integer, Module> entry:modules.entrySet()){
+            HashMap<Integer, Question> questionsOrig = QuestionDAO.getQuestionsFromModule(entry.getKey());
+            HashMap<Integer, Question> questions = getRandomQuestions(entry.getValue().getqCount(), questionsOrig);
+            for (Map.Entry<Integer, Question> questionEntry:questions.entrySet()){
+                HashMap<Integer, Answer> answers = AnswerDAO.getAnswerFromQuestion(questionEntry.getKey());
+                questionEntry.getValue().setAnswers(answers);
+                UserAnswer ua = new UserAnswer();
+                ua.setqId(questionEntry.getKey());
+                ua.setUserId(userId);
+                UserAnswerDAO.prepareAnswer(ua);
+            }
+            entry.getValue().setQuestions(questions);
+        }
+        retTest.setQuestions(modules);
+        return retTest;
+    }
+    private static Test loadTestWithNotPassedQuestion(int testId, LinkedList<Integer> npq) throws SQLException{
+        Test retTest = TestDAO.getTestInfo(testId);
+        HashMap<Integer, Module> modules = ModuleDAO.getModulesFromTest(testId);
+        for (Map.Entry<Integer, Module> entry: modules.entrySet()){
+            HashMap<Integer, Question> questionsOrig = QuestionDAO.getQuestionsFromModule(entry.getKey());
+            HashMap<Integer, Question> questions = new HashMap<>();
+            for (Map.Entry<Integer, Question> qEntry: questionsOrig.entrySet()){
+                if(npq.contains(qEntry.getKey())){
+                    HashMap<Integer, Answer> answers = AnswerDAO.getAnswerFromQuestion(qEntry.getKey());
+                    qEntry.getValue().setAnswers(answers);
+                    questions.put(qEntry.getKey(), qEntry.getValue());
+                }
+            }
+            entry.getValue().setQuestions(questions);
+        }
+        retTest.setQuestions(modules);
+        return retTest;
     }
 }
 
