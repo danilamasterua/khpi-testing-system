@@ -14,7 +14,7 @@ public class TestDAO {
             " from test inner join groupaccess on test.testId = groupaccess.testId " +
             " where groupaccess.groupId in (select groupId from user where userId=?) and" +
             " test.testId not in (select testId from userpoints where userId=?)  and " +
-            " test.testId in (select testId from groupaccess where groupaccess.accFinTime<now() or groupaccess.accFinTime is null)" +
+            " test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and accStTime<now() and (accFinTime>now() or accFinTime is null))" +
             " and test.blockstatus=0";
     private static final String SQL_GET_PASSED_TEST = "select test.testId, test.name, test.description, test.userId, userpoints.points " +
             " from userpoints left join test on userpoints.testId=test.testId " +
@@ -27,6 +27,14 @@ public class TestDAO {
     private static final String SQL_UPDATE_TEST="UPDATE test set name=?, description=? where testId=?";
     private static final String SQL_BLOCK_TEST="UPDATE test set blockstatus=1 where testId=?";
     private static final String SQL_UNBLOCK_TEST="UPDATE test set blockstatus=0 where testId=?";
+    private static final String SQL_SEARCH_TEST="select * from test inner join groupaccess on test.testId = groupaccess.testId " +
+            " where groupaccess.groupId in (select groupId from user where userId=?) and name like ? " +
+            " and test.testId not in (select testId from userpoints where userId=?)" +
+            " and test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and accStTime<now() and (accFinTime>now() or accFinTime is null))";
+    private static final String SQL_GET_AVAILABLE_TESTS_FROM_USER="select * from test inner join groupaccess on test.testId = groupaccess.testId " +
+            "where groupaccess.groupId in (select groupId from user where userId=?) and test.userId=? " +
+            " and test.testId not in (select testId from userpoints where userId=?)" +
+            " and test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and accStTime<now() and (accFinTime>now() or accFinTime is null))";
 
     public static HashMap<Integer, Test> getAvailableTest(User user) throws SQLException{
         HashMap<Integer, Test> retMap = new HashMap<>();
@@ -34,6 +42,7 @@ public class TestDAO {
             PreparedStatement statement = con.prepareStatement(SQL_GET_AVAILABLE_TESTS_FOR_USER);
             statement.setInt(1, user.getUserId());
             statement.setInt(2, user.getUserId());
+            statement.setInt(3, user.getUserId());
             ResultSet resultSet = statement.executeQuery();
             TestMapper mapper = new TestMapper();
             while (resultSet.next()){
@@ -203,6 +212,49 @@ public class TestDAO {
             Connect.getInstance().rollbackAndClose(con);
             e.printStackTrace();
         }
+    }
+    public static HashMap<Integer, Test> searchTest(int userId, String pName){
+        HashMap<Integer, Test> ret = new HashMap<>();
+        Connection con = null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_SEARCH_TEST);
+            statement.setInt(1, userId);
+            statement.setString(2, "%"+pName+"%");
+            statement.setInt(3, userId);
+            statement.setInt(4, userId);
+            ResultSet rs = statement.executeQuery();
+            TestMapper mapper = new TestMapper();
+            while (rs.next()){
+                ret.put(rs.getInt(Fields.testId), mapper.mapRow(rs));
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+            Connect.getInstance().rollbackAndClose(con);
+        }
+        return ret;
+    }
+    public static HashMap<Integer, Test> getAvailableTestByUser(int stUserId, int tUserId){
+        HashMap<Integer, Test> ret = new HashMap<>();
+        Connection con = null;
+        try {
+            con = Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_GET_AVAILABLE_TESTS_FROM_USER);
+            statement.setInt(1, stUserId);
+            statement.setInt(2, tUserId);
+            statement.setInt(3, stUserId);
+            statement.setInt(4, stUserId);
+            TestMapper mapper = new TestMapper();
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                ret.put(rs.getInt(Fields.testId), mapper.mapRow(rs));
+            }
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            e.printStackTrace();
+            Connect.getInstance().rollbackAndClose(con);
+        }
+        return ret;
     }
 }
 

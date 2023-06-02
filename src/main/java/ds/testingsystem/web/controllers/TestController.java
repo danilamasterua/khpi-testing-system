@@ -288,14 +288,18 @@ public class TestController {
                             }
                         }
                     }
-                    System.out.println("Question: "+qEntry.getValue().getText()+" right answers count:"+rightAnswersCount);
-                    System.out.println("Question: "+qEntry.getValue().getText()+" answers count:"+answersCount);
-                    Double percentRightAnswers = (double) (rightAnswersCount / answersCount * 100);
+                    Double percentRightAnswers = (rightAnswersCount / answersCount * 100);
                     questionStatistic.put(qEntry.getValue(), percentRightAnswers);
                 }
             }
         }
         return questionStatistic;
+    }
+    public static HashMap<Integer, Test> searchTest(int userId, String name){
+        return TestDAO.searchTest(userId, name);
+    }
+    public static HashMap<Integer, Test> filtrateTests(int stUserId, int tUserId){
+        return TestDAO.getAvailableTestByUser(stUserId, tUserId);
     }
     private static Double getPointsDD(DoubleWrapper points, Question question) {
         switch (question.getDifficultId()) {

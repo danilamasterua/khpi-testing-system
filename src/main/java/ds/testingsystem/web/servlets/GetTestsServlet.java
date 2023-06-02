@@ -2,6 +2,7 @@ package ds.testingsystem.web.servlets;
 
 import ds.testingsystem.web.controllers.TestController;
 import ds.testingsystem.database.model.Model;
+import ds.testingsystem.web.controllers.UserController;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,6 +26,7 @@ public class GetTestsServlet extends HttpServlet {
         }
         req.setAttribute("model", model);
         session.setAttribute("model", model);
+        req.setAttribute("teachers", UserController.getTeachers());
         getServletContext().getRequestDispatcher("/welcome.jsp").forward(req, resp);
     }
 }

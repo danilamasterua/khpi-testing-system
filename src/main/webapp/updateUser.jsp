@@ -19,7 +19,7 @@
             <label for="lastName" class="form-label">Прізвище</label>
             <input id="lastName" type="text" class="form-control" placeholder="Прізвище" name="lastName" value="${user.lastName}">
             <label for="email" class="form-label">EMail</label>
-            <input id="email" type="email" class="form-control" placeholder="EMail" name="email" value="${user.email}">
+            <input id="email" type="email" class="form-control" placeholder="EMail" name="email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" value="${user.email}">
             <input type="submit" value="Створити користувача" class="btn btn-primary">
         </form>
     </div>

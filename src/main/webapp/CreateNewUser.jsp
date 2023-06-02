@@ -16,11 +16,11 @@
     <div class="login-form-block">
         <form action="createTeacher" method="post">
             <label for="firstName" class="form-label">Ім'я</label>
-            <input id="firstName" type="text" class="form-control" placeholder="Ім'я" name="firstName">
+            <input id="firstName" type="text" class="form-control" placeholder="Ім'я" name="firstName" required>
             <label for="lastName" class="form-label">Прізвище</label>
-            <input id="lastName" type="text" class="form-control" placeholder="Прізвище" name="lastName">
+            <input id="lastName" type="text" class="form-control" placeholder="Прізвище" name="lastName" required>
             <label for="email" class="form-label">EMail</label>
-            <input id="email" type="email" class="form-control" placeholder="EMail" name="email">
+            <input id="email" type="email" class="form-control" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" placeholder="EMail" name="email" required>
             <input type="submit" value="Створити користувача" class="btn btn-primary">
         </form>
     </div>

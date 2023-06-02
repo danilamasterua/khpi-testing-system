@@ -28,10 +28,14 @@ public class TeacherFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         HttpSession session = req.getSession();
         Model model = (Model) session.getAttribute("model");
-        if(model.getCurrentUser().getRoleId()==2||model.getCurrentUser().getRoleId()==1){
-            chain.doFilter(request, response);
+        if(model!=null) {
+            if (model.getCurrentUser().getRoleId() == 2 || model.getCurrentUser().getRoleId() == 1) {
+                chain.doFilter(request, response);
+            } else {
+                servletContext.getRequestDispatcher("/errorPage.jsp").forward(req, resp);
+            }
         } else {
-            servletContext.getRequestDispatcher("/errorPage.jsp").forward(req, resp);
+            servletContext.getRequestDispatcher("/").forward(req, resp);
         }
     }
 
