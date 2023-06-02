@@ -77,7 +77,6 @@
         <form>
             <h4>Тест "${test.name}" завершено</h4>
             <input type="hidden" name="testId" value="${testId}">
-            <input type="hidden" name="startDate" value="${nowDate}">
             <button type="button" id="endTestBtn" class="btn btn-primary" onclick="getTestPoints(this)">Завершити тест</button>
         </form>
     </div>

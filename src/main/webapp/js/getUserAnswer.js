@@ -84,7 +84,6 @@ function getTestPoints(){
         url: 'getPoints',
         data: {
             testId: testInfo.elements['testId'].value,
-            startDate: testInfo.elements['startDate'].value
         },
         dataType: 'json',
         success: function (response){

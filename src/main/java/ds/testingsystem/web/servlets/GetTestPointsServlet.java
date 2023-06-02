@@ -21,12 +21,11 @@ public class GetTestPointsServlet extends HttpServlet {
         try {
             HttpSession session = req.getSession();
             int testId = Integer.parseInt(req.getParameter("testId"));
-            LocalDateTime startDateTime = LocalDateTime.parse(req.getParameter("startDate"));
             Model model = (Model) session.getAttribute("model");
             int userId = model.getCurrentUser().getUserId();
-            double points = TestController.getPoints(userId);
+            double points = TestController.getPoints(userId, testId);
             System.out.println("Points"+points);
-            double maxPoints = TestController.getMaxPoint(userId);
+            double maxPoints = TestController.getMaxPoint(userId, testId);
             System.out.println("Max points:"+maxPoints);
             double percentPoints = points/maxPoints*100;
             TestController.setUserPoint(percentPoints, testId, userId);

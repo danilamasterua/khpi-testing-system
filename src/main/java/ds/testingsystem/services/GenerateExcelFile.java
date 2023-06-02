@@ -26,6 +26,10 @@ public class GenerateExcelFile {
                 for(UserTestPoints utp : entry.getValue()){
                     addStudentRow(i++, sheet, workbook, utp);
                 }
+                sheet.autoSizeColumn(0);
+                sheet.autoSizeColumn(1);
+                sheet.autoSizeColumn(2);
+                sheet.autoSizeColumn(3);
             }
             FileOutputStream fos = new FileOutputStream(filePath.toFile());
             workbook.write(fos);
@@ -37,64 +41,42 @@ public class GenerateExcelFile {
 
     private static void addHeaderRow(Sheet sheet, Workbook workbook){
         Row rowHeader = sheet.createRow(0);
-        //CreateStyle
-        CellStyle headerStyle = workbook.createCellStyle();
-        Font font = workbook.createFont();
-        font.setFontName("Arial");
-        font.setFontHeightInPoints((short) 14);
-        font.setBold(true);
-        font.setColor(IndexedColors.WHITE.index);
-        headerStyle.setFont(font);
-        headerStyle.setAlignment(HorizontalAlignment.CENTER);
-        headerStyle.setFillForegroundColor(IndexedColors.BLUE.index);
-        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         //Create cells
         Cell firstName = rowHeader.createCell(0);
-        firstName.setCellStyle(headerStyle);
+        firstName.setCellStyle(headerStyle(workbook));
         firstName.setCellValue("Ім'я");
 
         Cell lastName = rowHeader.createCell(1);
-        lastName.setCellStyle(headerStyle);
+        lastName.setCellStyle(headerStyle(workbook));
         lastName.setCellValue("Прізвище");
 
         Cell points = rowHeader.createCell(2);
-        points.setCellStyle(headerStyle);
+        points.setCellStyle(headerStyle(workbook));
         points.setCellValue("Оцінка");
 
         Cell datetime = rowHeader.createCell(3);
-        datetime.setCellStyle(headerStyle);
+        datetime.setCellStyle(headerStyle(workbook));
         datetime.setCellValue("Дата та час оцінювання");
     }
 
     private static void addStudentRow(int i, Sheet sheet, Workbook workbook, UserTestPoints utp){
         Row row = sheet.createRow(i);
-        //Create style
-        CellStyle style = workbook.createCellStyle();
-        style.setBorderTop(BorderStyle.THIN);
-        style.setBorderBottom(BorderStyle.THIN);
-        style.setBorderLeft(BorderStyle.THIN);
-        style.setBorderRight(BorderStyle.THIN);
-        Font font = workbook.createFont();
-        font.setFontName("Arial");
-        font.setFontHeightInPoints((short) 14);
-        style.setFont(font);
         //Create cells
         Cell firstName = row.createCell(0);
-        firstName.setCellStyle(style);
+        firstName.setCellStyle(standardStyle(workbook));
         firstName.setCellValue(utp.getUser().getFirstName());
 
         Cell lastName = row.createCell(1);
-        lastName.setCellStyle(style);
+        lastName.setCellStyle(standardStyle(workbook));
         lastName.setCellValue(utp.getUser().getLastName());
 
         Cell points = row.createCell(2);
-        points.setCellStyle(style);
+        points.setCellStyle(standardStyle(workbook));
         points.setCellValue(utp.getPoints());
 
         Cell datetime = row.createCell(3);
-        datetime.setCellStyle(style);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm");
-        datetime.setCellValue(utp.getDateTime().format(formatter));
+        datetime.setCellStyle(standardStyle(workbook));
+        datetime.setCellValue(DateFormatter.formatLocalDateTime(utp.getDateTime(), "dd-MM-yyyy HH:mm"));
     }
     public static String rfc5987_encode(final String s) {
         final byte[] s_bytes = s.getBytes(StandardCharsets.UTF_8);
@@ -113,5 +95,36 @@ public class GenerateExcelFile {
         }
 
         return sb.toString();
+    }
+
+    private static CellStyle headerStyle(Workbook workbook){
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 14);
+        font.setBold(true);
+        font.setColor(IndexedColors.WHITE.index);
+        headerStyle.setFont(font);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setFillForegroundColor(IndexedColors.BLUE.index);
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setBorderTop(BorderStyle.THIN);
+        headerStyle.setBorderBottom(BorderStyle.THICK);
+        headerStyle.setBorderLeft(BorderStyle.THIN);
+        headerStyle.setBorderRight(BorderStyle.THIN);
+        return headerStyle;
+    }
+
+    private static CellStyle standardStyle(Workbook workbook){
+        CellStyle style = workbook.createCellStyle();
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        Font font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 14);
+        style.setFont(font);
+        return style;
     }
 }

@@ -13,9 +13,14 @@ public class UserAnswerDAO {
     private static final String SQL_INSERT_USERANSWER_WITH_ANSWER_ID = "insert into useranswer(answerId, questionId, userId, answerdate) values (?,?,?,?) on duplicate key update answerId=?";
     private static final String SQL_INSERT_USERANSWER_WITH_TEXT = "INSERT INTO useranswer(questionId, userId, text, answerdate) VALUES (?,?,?,?) on duplicate key update text=?";
     private static final String SQL_GET_USERANSWER_BY_QUESTION_ID = "select * from useranswer where userId=? and questionId=?";
-    private static final String SQL_GET_QUESTION_IDS_BY_USER = "select questionId from useranswer where userId=?";
+    private static final String SQL_GET_QUESTION_IDS_BY_USER = "select useranswer.questionId " +
+            "from useranswer left join question on useranswer.questionId = question.questionId " +
+            "join module on question.moduleId=module.moduleId " +
+            "join test on module.testId = test.testId " +
+            "where test.testId=? and useranswer.userId=?";
     private static final String SQL_INSERT_PREPARED_ANSWER = "insert into useranswer(questionId, userId) values (?,?) on duplicate key update text=null, answerId=null";
     private static final String SQL_GET_NOT_PASSED_QUESTION = "select questionId from useranswer where userId=? and answerId is null and text is null";
+    private static final String SQL_GET_USERANSWERS_BY_QUESTION = "select * from useranswer where questionId=?";
 
     public static void setUserAnswerOnAnswerId(UserAnswer userAnswer) throws SQLException{
         Connection con = null;
@@ -74,18 +79,18 @@ public class UserAnswerDAO {
         return userAnswers;
     }
 
-    public static LinkedList<Integer> getUserQuestions(int userId){
+    public static LinkedList<Integer> getUserQuestions(int testId, int userId){
         LinkedList<Integer> questionIdS = new LinkedList<>();
         Connection con = null;
         try {
             con=Connect.getInstance().getConnection();
-            PreparedStatement statement = con.prepareStatement(SQL_GET_QUESTION_IDS_BY_USER);
-            statement.setInt(1, userId);
-            ResultSet rs = statement.executeQuery();
+            PreparedStatement preparedStatement = con.prepareStatement(SQL_GET_QUESTION_IDS_BY_USER);
+            preparedStatement.setInt(1, testId);
+            preparedStatement.setInt(2, userId);
+            ResultSet rs = preparedStatement.executeQuery();
             while (rs.next()){
-                questionIdS.add(rs.getInt("questionId"));
+                questionIdS.add(rs.getInt(1));
             }
-            Connect.getInstance().commitAndClose(con);
         } catch (SQLException e){
             Connect.getInstance().rollbackAndClose(con);
             e.printStackTrace();
@@ -124,6 +129,26 @@ public class UserAnswerDAO {
             Connect.getInstance().rollbackAndClose(con);
         }
         return notPassedQuestions;
+    }
+
+    public static LinkedList<UserAnswer> getAnswersByQuestion(int questionId){
+        LinkedList<UserAnswer> userAnswers = new LinkedList<>();
+        Connection con = null;
+        try {
+            con=Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_GET_USERANSWERS_BY_QUESTION);
+            statement.setInt(1, questionId);
+            UserAnswerMapper mapper = new UserAnswerMapper();
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()){
+                userAnswers.add(mapper.mapRow(rs));
+            }
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            e.printStackTrace();
+            Connect.getInstance().rollbackAndClose(con);
+        }
+        return userAnswers;
     }
 }
 
