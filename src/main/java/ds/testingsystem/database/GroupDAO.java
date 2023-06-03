@@ -9,8 +9,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 public class GroupDAO {
-    private static final String SQL_GET_GROUPS_ACCESSED = "select * from edgroup where edgroup.groupId in (select groupId from groupaccess where testId=?)";
-    private static final String SQL_GET_GROUPS_NOT_ACCESSED = "select * from edgroup where edgroup.groupId not in (select groupId from groupaccess where testId=?)";
+    private static final String SQL_GET_GROUPS_ACCESSED = "select * from edgroup where edgroup.groupId in (select groupId from groupaccess where testId=? and (accStTime<now() or accStTime is null) and (accFinTime>now() or accFinTime is null))";
+    private static final String SQL_GET_GROUPS_NOT_ACCESSED = "select * from edgroup where edgroup.groupId not in (select groupId from groupaccess where testId=? and (accStTime<now() or accStTime is null) and (accFinTime>now() or accFinTime is null))";
     private static final String SQL_INSERT_GROUP = "insert into edgroup(name) values (?)";
     public static HashMap<Integer, Group> getAccessedGroup(int testId, boolean accessedGroups){
         HashMap<Integer, Group> retMap = new HashMap<>();

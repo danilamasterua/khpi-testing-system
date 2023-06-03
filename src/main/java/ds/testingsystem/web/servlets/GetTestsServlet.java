@@ -20,7 +20,7 @@ public class GetTestsServlet extends HttpServlet {
         HttpSession session = req.getSession();
         Model model = (Model) session.getAttribute("model");
         try {
-            model.setTests(TestController.getAvailableTests(model.getCurrentUser().getLogin()));
+            model.setTests(TestController.getAvailableTests(model.getCurrentUser().getLogin(), true));
         } catch (SQLException e) {
             e.printStackTrace();
         }

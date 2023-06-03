@@ -21,9 +21,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class TestController {
-    public static HashMap<Integer, Test> getAvailableTests(String login) throws SQLException {
+    public static HashMap<Integer, Test> getAvailableTests(String login, boolean isAsc) throws SQLException {
         User user = UserDAO.getUserInfo(login);
-        return TestDAO.getAvailableTest(user);
+        return TestDAO.getAvailableTest(user, isAsc);
     }
     public static Test loadTest(int testId) throws SQLException{
         Test retTest = TestDAO.getTestInfo(testId);
@@ -59,6 +59,9 @@ public class TestController {
                 UserAnswer ua = new UserAnswer(userId, Integer.parseInt(str), userAnswerList.getqId());
                 UserAnswerDAO.setUserAnswerOnAnswerId(ua);
                 isRight = answers.get(Integer.parseInt(str)).isRight();
+                if (!isRight){
+                    break;
+                }
             }
         }
         return isRight;
@@ -178,22 +181,20 @@ public class TestController {
         System.out.println("qIds{\n"+questionIdS+"\n}");
         for (int id:questionIdS){
             LinkedList<UserAnswer> ua = UserAnswerDAO.getUserAnswersByQuestionId(id, userId);
-            System.out.println("ua={\n"+ua+"\n}");
             Question question = QuestionDAO.getQuestion(id);
             HashMap<Integer, Answer> qAnswers = AnswerDAO.getAnswerFromQuestion(id);
             ua.forEach(a -> {
-                System.out.println("aId" + a.getAnswerId());
-                if (a.getAnswerId()!=0) {
-                    if (question.getqTypeId() == 1 || question.getqTypeId() == 2) {
-                        Answer answer = qAnswers.get(a.getAnswerId());
-                        if (answer.isRight()) {
+                System.out.println("aId1=" + a.getAnswerId());
+                System.out.println("aText="+a.getText());
+                if (question.getqTypeId() == 1 || question.getqTypeId() == 2) {
+                    Answer answer = qAnswers.get(a.getAnswerId());
+                    if (answer.isRight()) {
+                        points.setValue(getPointsDD(points, question));
+                    }
+                } else if (question.getqTypeId() == 3) {
+                    for (Map.Entry<Integer, Answer> entry: qAnswers.entrySet()){
+                        if (a.getText().equals(entry.getValue().getText())){
                             points.setValue(getPointsDD(points, question));
-                        }
-                    } else if (question.getqTypeId() == 3) {
-                        for (Map.Entry<Integer, Answer> entry: qAnswers.entrySet()){
-                            if (a.getText().equals(entry.getValue().getText())){
-                                points.setValue(getPointsDD(points, question));
-                            }
                         }
                     }
                 }
@@ -209,9 +210,15 @@ public class TestController {
             Question question = QuestionDAO.getQuestion(id);
             HashMap<Integer, Answer> qAnswers = AnswerDAO.getAnswerFromQuestion(id);
             for (Map.Entry<Integer, Answer> entry : qAnswers.entrySet()) {
-                if (question.getqTypeId() == 1 || question.getqTypeId() == 2) {
+                if (question.getqTypeId() == 1) {
+                    if (entry.getValue().isRight()) {
+                        System.out.println("aId2=" + entry.getKey());
+                        points.setValue(getPointsDD(points, question));
+                    }
+                } else if (question.getqTypeId()==2) {
                     if (entry.getValue().isRight()) {
                         points.setValue(getPointsDD(points, question));
+                        break;
                     }
                 } else if (question.getqTypeId() == 3) {
                     points.setValue(getPointsDD(points, question));

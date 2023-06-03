@@ -1,3 +1,7 @@
+let startTime;
+let duration;
+let finTime;
+let timer;
 function getAnswer(obj){
     obj.disabled = 'true';
     let form = document.getElementById(obj.id).parentElement;
@@ -77,6 +81,7 @@ function openNextBlock(obj){
 function getTestPoints(){
     let obj = document.getElementById("endTestBtn");
     obj.disabled=true;
+    clearTimeout(timer);
     document.getElementById("loading").style.display = "flex";
     let testInfo = obj.parentElement;
     $.ajax({
@@ -94,11 +99,6 @@ function getTestPoints(){
     })
 }
 
-let startTime;
-let duration;
-let finTime;
-let timer;
-
 function startTimer(obj){
     startTime = Math.floor(Date.now()/1000);
     let form = obj.parentElement;
@@ -109,15 +109,14 @@ function startTimer(obj){
         finTime=new Date(form.elements['finAccDate'].value);
         duration = Math.floor((finTime-startTime)/1000);
         console.log(duration);
-    } else if (minToFin!=""&&minToFin!="0"){
+        timer = setInterval(updateTimer, 1000);
+    } else if (minToFin!=""&&minToFin!=0){
         duration = Number.parseInt(minToFin) * 60;
         console.log("Starting test with minToFin");
         console.log(duration);
+        timer = setInterval(updateTimer, 1000);
     } else {
         console.log("Starting test without timer");
-    }
-    if(finTestDate!=""||minToFin!=""){
-        timer = setInterval(updateTimer, 1000);
     }
 }
 

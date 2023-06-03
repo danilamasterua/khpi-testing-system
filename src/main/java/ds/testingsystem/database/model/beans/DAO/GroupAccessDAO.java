@@ -9,7 +9,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 
 public class GroupAccessDAO {
-    private static final String SQL_INSERT_GROUPACCESS = "insert into groupaccess(groupId, testId, accStTime, accFinTime, minToFin) values (?,?,?,?,?)";
+    private static final String SQL_INSERT_GROUPACCESS = "insert into groupaccess(groupId, testId, accStTime, accFinTime, minToFin) values (?,?,?,?,?) on duplicate key update accStTime=?, accFinTime=?, minToFin=?";
     private static final String SQL_REMOVE_GROUPACCESS = "delete from groupaccess where testId=? and groupId=?";
     private static final String SQL_GET_ACCESS_DATA_BY_TEST = "select * from groupaccess where testId=? and groupId=?";
 
@@ -23,11 +23,16 @@ public class GroupAccessDAO {
             if(ga.getAccStTime()!=null&&ga.getAccFinTime()!=null) {
                 statement.setTimestamp(3, Timestamp.valueOf(ga.getAccStTime()));
                 statement.setTimestamp(4, Timestamp.valueOf(ga.getAccFinTime()));
+                statement.setTimestamp(6, Timestamp.valueOf(ga.getAccStTime()));
+                statement.setTimestamp(7, Timestamp.valueOf(ga.getAccFinTime()));
             } else {
                 statement.setTimestamp(3, null);
                 statement.setTimestamp(4, null);
+                statement.setTimestamp(6, null);
+                statement.setTimestamp(7, null);
             }
             statement.setInt(5, ga.getMinToFin());
+            statement.setInt(8, ga.getMinToFin());
             statement.executeUpdate();
             Connect.getInstance().commitAndClose(con);
         } catch (SQLException e){

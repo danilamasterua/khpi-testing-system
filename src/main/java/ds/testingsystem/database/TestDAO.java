@@ -14,8 +14,8 @@ public class TestDAO {
             " from test inner join groupaccess on test.testId = groupaccess.testId " +
             " where groupaccess.groupId in (select groupId from user where userId=?) and" +
             " test.testId not in (select testId from userpoints where userId=?)  and " +
-            " test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and accStTime<now() and (accFinTime>now() or accFinTime is null))" +
-            " and test.blockstatus=0";
+            " test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and (accStTime<now() or accStTime is null) and (accFinTime>now() or accFinTime is null))" +
+            " and test.blockstatus=0 order by test.name asc";
     private static final String SQL_GET_PASSED_TEST = "select test.testId, test.name, test.description, test.userId, userpoints.points " +
             " from userpoints left join test on userpoints.testId=test.testId " +
             " where userpoints.userId = ? order by userpoints.datetime desc";
@@ -30,16 +30,27 @@ public class TestDAO {
     private static final String SQL_SEARCH_TEST="select * from test inner join groupaccess on test.testId = groupaccess.testId " +
             " where groupaccess.groupId in (select groupId from user where userId=?) and name like ? " +
             " and test.testId not in (select testId from userpoints where userId=?)" +
-            " and test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and accStTime<now() and (accFinTime>now() or accFinTime is null))";
+            " and test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and (accStTime<now() or accStTime is null) and (accFinTime>now() or accFinTime is null))";
     private static final String SQL_GET_AVAILABLE_TESTS_FROM_USER="select * from test inner join groupaccess on test.testId = groupaccess.testId " +
             "where groupaccess.groupId in (select groupId from user where userId=?) and test.userId=? " +
             " and test.testId not in (select testId from userpoints where userId=?)" +
-            " and test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and accStTime<now() and (accFinTime>now() or accFinTime is null))";
+            " and test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and (accStTime<now() or accStTime is null) and (accFinTime>now() or accFinTime is null))";
+    private static final String SQL_GET_AVAILABLE_TESTS_FOR_USER_DESC = "select test.testId, test.name, test.description, test.userId" +
+            " from test inner join groupaccess on test.testId = groupaccess.testId " +
+            " where groupaccess.groupId in (select groupId from user where userId=?) and" +
+            " test.testId not in (select testId from userpoints where userId=?)  and " +
+            " test.testId in (select testId from groupaccess where groupaccess.groupId in (select groupId from user where user.userId=?) and (accStTime<now() or accStTime is null) and (accFinTime>now() or accFinTime is null))" +
+            " and test.blockstatus=0 order by test.name desc";
 
-    public static HashMap<Integer, Test> getAvailableTest(User user) throws SQLException{
+    public static HashMap<Integer, Test> getAvailableTest(User user, boolean isAsc) throws SQLException{
         HashMap<Integer, Test> retMap = new HashMap<>();
         try (Connection con = Connect.getInstance().getConnection()){
-            PreparedStatement statement = con.prepareStatement(SQL_GET_AVAILABLE_TESTS_FOR_USER);
+            PreparedStatement statement;
+            if(isAsc) {
+                    statement=con.prepareStatement(SQL_GET_AVAILABLE_TESTS_FOR_USER);
+            } else {
+                statement= con.prepareStatement(SQL_GET_AVAILABLE_TESTS_FOR_USER_DESC);
+            }
             statement.setInt(1, user.getUserId());
             statement.setInt(2, user.getUserId());
             statement.setInt(3, user.getUserId());
