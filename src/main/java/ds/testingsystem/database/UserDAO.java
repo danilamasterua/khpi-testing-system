@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class UserDAO {
     private static final String SQL_GET_USER_INFO = "select * from user where login=? and blockstatus=0";
-    private static final String SQL_GET_USERS_TEACHERS = "select * from user where roleId=2 or roleId=1 and blockstatus=0";
+    private static final String SQL_GET_USERS_TEACHERS = "select * from user where (roleId=2 or roleId=1) and blockstatus=0";
     private static final String SQL_INSERT_NEW_USER = "insert into user(firstName, lastName, login, password, roleId, email, groupId) VALUES (?,?,?,?,?,?,?)";
     private static final String SQL_GET_USERS_BY_GROUP = "select * from user where groupId=? and blockstatus=0";
     private static final String SQL_GET_USER_BY_ID = "select * from user where userId=?";

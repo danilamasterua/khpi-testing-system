@@ -107,7 +107,7 @@ function getQuestionTabRow(index, question){
     btnDelete.setAttribute("type", "button");
     btnDelete.setAttribute("class", "btn btn-warning");
     btnDelete.setAttribute("id", index);
-    btnDelete.setAttribute("onclick", "deleteQuestion(obj)");
+    btnDelete.setAttribute("onclick", "deleteQuestion(this)");
     btnDelete.append("Видалити");
     tdBtnDeleteQuestion.append(btnDelete);
     tr.append(tdText);

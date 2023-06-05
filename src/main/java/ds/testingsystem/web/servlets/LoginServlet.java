@@ -1,5 +1,6 @@
 package ds.testingsystem.web.servlets;
 
+import ds.testingsystem.database.model.User;
 import ds.testingsystem.web.controllers.UserController;
 import ds.testingsystem.database.model.Model;
 
@@ -23,15 +24,23 @@ public class LoginServlet extends HttpServlet {
         String password = req.getParameter("pass");
         ServletContext servletContext = getServletContext();
         try {
-            if(UserController.checkUserPassword(login, password)){
-                HttpSession session = req.getSession();
-                Model model = new Model(UserController.getUserDataFromDB(login));
-                session.setAttribute("model", model);
-                resp.sendRedirect(req.getContextPath()+"/getTests");
+            User user = UserController.getUserDataFromDB(login);
+            if(user.getPassword()!=null&&user.getLogin()!=null) {
+                if (UserController.checkUserPassword(login, password)) {
+                    HttpSession session = req.getSession();
+                    Model model = new Model();
+                    model.setCurrentUser(user);
+                    session.setAttribute("model", model);
+                    resp.sendRedirect(req.getContextPath() + "/getTests");
+                } else {
+                    RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher("/index.jsp");
+                    req.setAttribute("error", "Пароль або логін неправильні");
+                    requestDispatcher.forward(req, resp);
+                }
             } else {
                 RequestDispatcher requestDispatcher = servletContext.getRequestDispatcher("/index.jsp");
                 req.setAttribute("error", "Пароль або логін неправильні");
-                requestDispatcher.forward(req,resp);
+                requestDispatcher.forward(req, resp);
             }
         } catch (SQLException e) {
             e.printStackTrace();

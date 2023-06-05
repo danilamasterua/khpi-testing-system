@@ -25,7 +25,7 @@
             </li>
         </div>
         <div class="tab-content" id="content">
-            <div id="studentResults" class="tab-pane fade show active" role="tabpanel" aria-labelledby="pills-student-results-tab" tabindex="0>
+            <div id="studentResults" class="tab-pane fade show active" role="tabpanel" aria-labelledby="pills-student-results-tab" tabindex="0">
                 <form action="getResults/xlsFile">
                     <input type="hidden" name="testId" value="${testId}">
                     <button type="submit" class="btn btn-primary"><i class="bi bi-file-spreadsheet"></i> Завантажити</button>
@@ -49,7 +49,7 @@
                 </c:forEach>
             </div>
             <div id="detailedStatistic" class="tab-pane fade" role="tabpanel" aria-labelledby="pills-statistic-tab" tabindex="0">
-                <table class="table table-striped-columns">
+                <table class="table table-striped-columns table_sort">
                     <tr>
                         <th class="col-lg-6">Запитання</th>
                         <th class="col-lg-2">Відсоток вірних відповідей</th>

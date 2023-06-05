@@ -15,13 +15,16 @@ public class CreateStudentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         int gId = Integer.parseInt(req.getParameter("groupId"));
-        int testId = Integer.parseInt(req.getParameter("testId"));
         String firstName = req.getParameter("firstName");
         String lastName = req.getParameter("lastName");
         String email = req.getParameter("email");
-        int res = UserController.createUserStudent(firstName, lastName, email, gId);
-        if (res==-1){
-            throw new RuntimeException();
+        if(firstName.length()!=0&&lastName.length()!=0&&email.length()!=0) {
+            int res = UserController.createUserStudent(firstName, lastName, email, gId);
+            if(res == -1){
+                throw new RuntimeException("Error 500. Student already exist or another error.");
+            }
+        } else {
+            throw new RuntimeException("One or few fields is empty");
         }
     }
 }

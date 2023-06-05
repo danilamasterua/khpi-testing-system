@@ -284,8 +284,10 @@ public class TestController {
                         answersCount++;
                         if (qEntry.getValue().getqTypeId() == 1 || qEntry.getValue().getqTypeId() == 2) {
                             Answer answer = qEntry.getValue().getAnswers().get(ua.getAnswerId());
-                            if (answer.isRight()) {
-                                rightAnswersCount++;
+                            if(answer!=null) {
+                                if (answer.isRight()) {
+                                    rightAnswersCount++;
+                                }
                             }
                         } else {
                             for (Map.Entry<Integer, Answer> entry: qEntry.getValue().getAnswers().entrySet()){
@@ -307,6 +309,9 @@ public class TestController {
     }
     public static HashMap<Integer, Test> filtrateTests(int stUserId, int tUserId){
         return TestDAO.getAvailableTestByUser(stUserId, tUserId);
+    }
+    public static void deleteAnswer(int ansId){
+        AnswerDAO.deleteAnswer(ansId);
     }
     private static Double getPointsDD(DoubleWrapper points, Question question) {
         switch (question.getDifficultId()) {
@@ -361,12 +366,11 @@ public class TestController {
         retTest.setQuestions(modules);
         return retTest;
     }
-}
-
-class DoubleWrapper{
-    private double value;
-    public DoubleWrapper() {value=0;}
-    public DoubleWrapper(double value) {this.value = value;}
-    public double getValue() {return value;}
-    public void setValue(double value) {this.value = value;}
+    private static class DoubleWrapper{
+        private double value;
+        public DoubleWrapper() {value=0;}
+        public DoubleWrapper(double value) {this.value = value;}
+        public double getValue() {return value;}
+        public void setValue(double value) {this.value = value;}
+    }
 }

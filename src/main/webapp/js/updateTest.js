@@ -157,11 +157,10 @@ function deleteNEAns(obj){
     let objC = obj;
     $.ajax({
         method: "post",
-        url: "",
+        url: "deleteAnswer",
         data:{ansId:obj.id},
         success: function (response){
-            clearForm(obj.parentElement.parentElement);
-            formQuestionForm(objC);
+            document.getElementById(obj.id).parentElement.remove();
         }
     })
 }

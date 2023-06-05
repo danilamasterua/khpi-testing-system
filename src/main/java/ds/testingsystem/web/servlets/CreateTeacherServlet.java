@@ -19,9 +19,10 @@ public class CreateTeacherServlet extends HttpServlet {
         String email = req.getParameter("email");
         try {
             UserController.createUserTeacher(firstName, lastName, email);
-            getServletContext().getRequestDispatcher("/userControl").forward(req, resp);
+            resp.sendRedirect(req.getContextPath()+"/userControl");
         } catch (Exception e){
-            e.printStackTrace();
+            req.setAttribute("error", e.getMessage());
+            resp.sendRedirect(req.getContextPath()+"/userControl");
         }
     }
 }

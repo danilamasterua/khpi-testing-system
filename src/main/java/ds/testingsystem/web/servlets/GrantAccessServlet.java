@@ -21,7 +21,11 @@ public class GrantAccessServlet extends HttpServlet {
         if(!req.getParameter("accStTime").equals("") && !req.getParameter("accFinTime").equals("")) {
             LocalDateTime stDateTime = LocalDateTime.parse(req.getParameter("accStTime"));
             LocalDateTime finDateTime = LocalDateTime.parse(req.getParameter("accFinTime"));
-            ga = new GroupAccess(testId, groupId, stDateTime, finDateTime);
+            if(stDateTime.isBefore(finDateTime)) {
+                ga = new GroupAccess(testId, groupId, stDateTime, finDateTime);
+            } else {
+                throw new RuntimeException("Start time is after final time");
+            }
         } else if (!req.getParameter("minToFin").equals("")) {
             int minToFin = Integer.parseInt(req.getParameter("minToFin"));
             ga = new GroupAccess(testId, groupId, minToFin);

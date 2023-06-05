@@ -45,41 +45,49 @@ function createStudent(obj){
     let firstName = form.elements['firstName'].value;
     let lastName = form.elements['lastName'].value;
     let email = form.elements['email'].value;
-    $.ajax({
-        method: 'post',
-        url: 'createStudent',
-        data: {
-            testId: testId,
-            groupId: gId,
-            firstName: firstName,
-            lastName: lastName,
-            email: email
-        },
-        success: function (response){
-            location.reload();
-        },
-        error: function (error){
-            alert(error);
-        }
-    })
+    if(firstName.length!==0&&lastName.length!==0&&email.length!==0) {
+        $.ajax({
+            method: 'post',
+            url: 'createStudent',
+            data: {
+                testId: testId,
+                groupId: gId,
+                firstName: firstName,
+                lastName: lastName,
+                email: email
+            },
+            success: function (response) {
+                location.reload();
+            },
+            error: function (error) {
+                alert(error);
+            }
+        })
+    } else {
+        alert("Поля не повинні бути пусті");
+    }
 }
 
 function createGroup(obj) {
     let form = obj.parentElement;
     let description = form.elements['description'].value;
-    $.ajax({
-        method: 'get',
-        url: 'createGroup',
-        data: {description: description},
-        dataType: 'json',
-        success: function (response) {
-            location.reload();
-        },
-        error: function (error) {
-            alert("Помилка при створенні групи.\nМожливо група з такою назвою вже існує, або потрібно звернутися до системного адміністратора");
-            location.reload();
-        }
-    })
+    if (description.length!==0) {
+        $.ajax({
+            method: 'get',
+            url: 'createGroup',
+            data: {description: description},
+            dataType: 'json',
+            success: function (response) {
+                if (response.gId === "-1") {
+                    alert("Помилка при створенні групи, можливо, що група з такою назвою вже існує");
+                } else {
+                    location.reload();
+                }
+            }
+        })
+    } else {
+        alert("Поля не повинні бути пусті")
+    }
 }
 
 function createUserSmallDiv(obj){
@@ -122,4 +130,13 @@ function changeAccType(obj){
             alert("Error");
             break;
     }
+}
+
+function checkEmail(value){
+    let pattern = /^[\w\.-]+@[\w\.-]+\.\w+$/gm
+    return pattern.test(value);
+}
+
+function checkEmailAndEnableButton(value){
+    document.getElementById("cNU").disabled = !checkEmail(value);
 }

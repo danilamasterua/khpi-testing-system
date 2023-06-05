@@ -2,10 +2,7 @@ package ds.testingsystem.database;
 
 import ds.testingsystem.database.model.Group;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 
 public class GroupDAO {
@@ -37,23 +34,19 @@ public class GroupDAO {
         return retMap;
     }
     public static int insertGroup(Group g){
-        int ret=-1;
         Connection con = null;
         try {
             con = Connect.getInstance().getConnection();
-            PreparedStatement statement = con.prepareStatement(SQL_INSERT_GROUP, PreparedStatement.RETURN_GENERATED_KEYS);
+            PreparedStatement statement = con.prepareStatement(SQL_INSERT_GROUP);
             statement.setString(1, g.getName());
             statement.executeUpdate();
-            ResultSet rs = statement.getGeneratedKeys();
-            while (rs.next()){
-                ret=rs.getInt(1);
-            }
             Connect.getInstance().commitAndClose(con);
+            return 200;
         } catch (SQLException e){
             e.printStackTrace();
             Connect.getInstance().rollbackAndClose(con);
+            return -1;
         }
-        return ret;
     }
 }
 class GroupMapper implements EntityMapper<Group>{

@@ -19,12 +19,12 @@
     <div style="display: flex">
         <div class="m-2">
             <form action="searchTest">
-                <label for="search" class="form-label">Пошук за назвою</label>
+                <label for="search" class="form-label">Пошук за назвою:</label>
                 <input type="text" id="search" placeholder="Пошук" name="search" class="form-control">
                 <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i></button>
             </form>
             <form action="filtrateTest">
-                <label for="teacher" class="form-label">Фільтрувати за викладачем</label>
+                <label for="teacher" class="form-label">Фільтрувати за викладачем:</label>
                 <select class="form-select" id="teacher" name="teacherId">
                     <c:forEach var="t" items="${teachers}">
                         <option value="${t.key}">${t.value.firstName} ${t.value.lastName}</option>
@@ -32,6 +32,14 @@
                 </select>
                 <button type="submit" class="btn btn-primary">Фільтрувати</button>
             </form>
+<%--            <form action="sortTests">--%>
+<%--                <label for="sort" class="form-label">Сортувати по назві тесту:</label>--%>
+<%--                <select class="form-select" id="sort" name="sortType">--%>
+<%--                    <option value="true">За зростанням (А-Я)</option>--%>
+<%--                    <option value="false">За спаданням (Я-А)</option>--%>
+<%--                </select>--%>
+<%--                <button type="submit" class="btn btn-primary">Сортувати</button>--%>
+<%--            </form>--%>
         </div>
         <div class="scroll-list m-2">
             <c:forEach var="t" items="${model.tests}">

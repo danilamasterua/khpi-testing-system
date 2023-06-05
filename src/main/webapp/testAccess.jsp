@@ -108,10 +108,10 @@
                 <label for="lastName" class="form-label">Прізвище</label>
                 <input id="lastName" type="text" class="form-control" placeholder="Прізвище" name="lastName">
                 <label for="email" class="form-label">EMail</label>
-                <input id="email" type="email" class="form-control" placeholder="EMail" name="email">
+                <input id="email" type="email" class="form-control" placeholder="EMail" name="email" onchange="checkEmailAndEnableButton(this.value)">
                 <p class="row mb-0">
                     <button type="button" id="backM" class="btn btn-light col m-2" onclick="backToTable(this)"><i class="bi bi-arrow-bar-left"></i> Назад</button>
-                    <button type="button" id="cNU" class="btn btn-primary col m-2" onclick="createStudent(this)">Зберегти</button>
+                    <button type="button" id="cNU" class="btn btn-primary col m-2" onclick="createStudent(this)" disabled>Зберегти</button>
                 </p>
             </form>
             </div>

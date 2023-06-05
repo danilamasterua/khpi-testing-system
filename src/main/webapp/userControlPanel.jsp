@@ -28,10 +28,12 @@
               <b>Email:</b> ${u.value.email}
           </p>
             <div class="btn-group">
-                <form class="btn" action="blockUser" method="post">
-                    <input type="hidden" name="userId" value="${u.key}">
-                    <button type="submit" class="btn btn-warning"><i class="bi bi-lock"></i> Заблокувати користувача</button>
-                </form>
+                <c:if test="${u.value.roleId!=1}">
+                    <form class="btn" action="blockUser" method="post">
+                        <input type="hidden" name="userId" value="${u.key}">
+                        <button type="submit" class="btn btn-warning"><i class="bi bi-lock"></i> Заблокувати користувача</button>
+                    </form>
+                </c:if>
                 <form class="btn" action="updateUser">
                     <input type="hidden" name="userId" value="${u.key}">
                     <button type="submit" class="btn btn-primary">Редагувати користувача</button>
