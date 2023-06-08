@@ -140,3 +140,23 @@ function checkEmail(value){
 function checkEmailAndEnableButton(value){
     document.getElementById("cNU").disabled = !checkEmail(value);
 }
+
+function deleteUserPoints(obj){
+    let form = obj.parentElement;
+    let tId = form.elements['testId'].value;
+    let uId = form.elements['userId'].value;
+    $.ajax({
+        method: 'post',
+        url: 'deleteUserPoints',
+        data: {
+            userId: uId,
+            testId: tId
+        },
+        success: function (response) {
+            form.parentElement.parentElement.remove();
+        },
+        error: function (error) {
+            alert("Помилка");
+        }
+    })
+}

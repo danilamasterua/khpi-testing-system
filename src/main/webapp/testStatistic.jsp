@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <script src="js/bootstrap-5.3.0-dist/js/bootstrap.bundle.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="bootstrap-5.3.0-dist/js/bootstrap.bundle.js"></script>
+    <script src="js/accessTable.js"></script>
 </head>
 <body>
 <jsp:include page="servicejsp/standardHeader.jsp"></jsp:include>
@@ -37,12 +39,20 @@
                             <th class="col-lg-4">Студент</th>
                             <th class="col-lg-2">Оцінка</th>
                             <th class="col-lg-2">Дата оцінювання</th>
+                            <th></th>
                         </tr>
                         <c:forEach var="u" items="${g.value}">
                             <tr>
                                 <td>${u.user.firstName} ${u.user.lastName}</td>
                                 <td>${u.points}</td>
                                 <td>${f:formatLocalDateTime(u.dateTime, "dd.MM.yyyy HH:mm")}</td>
+                                <td>
+                                    <form action="deleteUserPoints" method="post">
+                                        <input type="hidden" value="${testId}" name="testId">
+                                        <input type="hidden" value="${u.user.userId}" name="userId">
+                                        <button type="submit" class="btn btn-warning">Видалити результати користувача</button>
+                                    </form>
+                                </td>
                             </tr>
                         </c:forEach>
                     </table>

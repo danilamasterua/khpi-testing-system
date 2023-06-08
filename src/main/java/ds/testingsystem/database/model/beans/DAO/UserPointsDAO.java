@@ -15,6 +15,7 @@ public class UserPointsDAO {
     private static final String SQL_GET_USERPOINT = "select user.userId, user.firstName, user.lastName, user.login, user.password, user.roleId, user.email, user.groupId, userpoints.points, userpoints.datetime " +
             "from user right join userpoints on user.userId=userpoints.userId " +
             "where user.groupId=? and userpoints.testId=?";
+    private static final String SQL_DELETE_USERPOINT = "delete from userpoints where testId=? and userId=?";
 
     public static void insertUserpoint(UserPoints up){
         Connection con = null;
@@ -42,7 +43,8 @@ public class UserPointsDAO {
             statement.setInt(2, testId);
             ResultSet rs = statement.executeQuery();
             while (rs.next()){
-                User user = new User(rs.getString(Fields.userFirstName),
+                User user = new User(rs.getInt(Fields.userId),
+                        rs.getString(Fields.userFirstName),
                         rs.getString(Fields.userLastName),
                         rs.getString(Fields.userLogin),
                         rs.getString(Fields.userPassword),
@@ -58,5 +60,19 @@ public class UserPointsDAO {
             Connect.getInstance().rollbackAndClose(con);
         }
         return utp;
+    }
+    public static void deleteUserPoint(int testId, int userId){
+        Connection con = null;
+        try {
+            con=Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_DELETE_USERPOINT);
+            statement.setInt(1, testId);
+            statement.setInt(2, userId);
+            statement.executeUpdate();
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            e.printStackTrace();
+            Connect.getInstance().rollbackAndClose(con);
+        }
     }
 }

@@ -20,6 +20,11 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * TestController contains methods for work with tests
+ *
+ *
+ */
 public class TestController {
     public static HashMap<Integer, Test> getAvailableTests(String login, boolean isAsc) throws SQLException {
         User user = UserDAO.getUserInfo(login);
@@ -186,7 +191,7 @@ public class TestController {
             ua.forEach(a -> {
                 System.out.println("aId1=" + a.getAnswerId());
                 System.out.println("aText="+a.getText());
-                if (question.getqTypeId() == 1 || question.getqTypeId() == 2) {
+                if ((question.getqTypeId() == 1 || question.getqTypeId() == 2) && a.getAnswerId()!=0) {
                     Answer answer = qAnswers.get(a.getAnswerId());
                     if (answer.isRight()) {
                         points.setValue(getPointsDD(points, question));
@@ -313,6 +318,12 @@ public class TestController {
     public static void deleteAnswer(int ansId){
         AnswerDAO.deleteAnswer(ansId);
     }
+    public static void clearUserPoint(int testId, int userId){
+        UserAnswerDAO.deleteUserAnswer(testId, userId);
+        UserPointsDAO.deleteUserPoint(testId, userId);
+    }
+
+    //Private methods
     private static Double getPointsDD(DoubleWrapper points, Question question) {
         switch (question.getDifficultId()) {
             case 1:

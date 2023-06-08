@@ -21,6 +21,7 @@ public class UserAnswerDAO {
     private static final String SQL_INSERT_PREPARED_ANSWER = "insert into useranswer(questionId, userId) values (?,?) on duplicate key update text=null, answerId=null";
     private static final String SQL_GET_NOT_PASSED_QUESTION = "select questionId from useranswer where userId=? and answerId is null and text is null";
     private static final String SQL_GET_USERANSWERS_BY_QUESTION = "select * from useranswer where questionId=?";
+    private static final String SQL_DELETE_USERANSWER = "delete from useranswer where userId=? and questionId in (select question.questionId from question left join module m on m.moduleId = question.moduleId left join test t on m.testId = t.testId where t.testId=?)";
 
     public static void setUserAnswerOnAnswerId(UserAnswer userAnswer) throws SQLException{
         Connection con = null;
@@ -149,6 +150,21 @@ public class UserAnswerDAO {
             Connect.getInstance().rollbackAndClose(con);
         }
         return userAnswers;
+    }
+
+    public static void deleteUserAnswer(int testId, int userId){
+        Connection con = null;
+        try {
+            con=Connect.getInstance().getConnection();
+            PreparedStatement statement = con.prepareStatement(SQL_DELETE_USERANSWER);
+            statement.setInt(1, userId);
+            statement.setInt(2, testId);
+            statement.executeUpdate();
+            Connect.getInstance().commitAndClose(con);
+        } catch (SQLException e){
+            e.printStackTrace();
+            Connect.getInstance().rollbackAndClose(con);
+        }
     }
 }
 
